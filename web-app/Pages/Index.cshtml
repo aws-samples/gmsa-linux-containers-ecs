@@ -1,0 +1,65 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+
+}
+
+<div class="text-center">
+    <h1 class="display-4">Hello Linux container gMSA auth on Amazon ECS</h1>
+</div>
+
+<br/>
+<br />
+
+<div class="text-left">
+    <h3>SQL Server connection information</h3>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>Connection String</td>
+                <td>@Model.ConnectionInfo.ConnectionString</td>
+            </tr>
+            <tr>
+                <td>User</td>
+                <td>@Model.ConnectionInfo.SQLUser</td>
+            </tr>
+            <tr>
+                <td>Authentication method</td>
+                <td>@Model.ConnectionInfo.SQLAuthentication</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <br />
+    <br />
+
+
+    <h3>Albums</h3>
+    @if (this.Model.Albums.Count == 0)
+    {
+        <br />
+        <h4>Error connecting to the database.</h4>
+    }
+    else
+    {
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Title</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var actualAlbum in this.Model.Albums)
+                {
+                    <tr>
+                        <td>@actualAlbum.AlbumId</td>
+                        <td>@actualAlbum.Title</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
