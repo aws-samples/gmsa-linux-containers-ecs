@@ -12,7 +12,6 @@ import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import * as directory from 'aws-cdk-lib/aws-directoryservice';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -26,10 +25,10 @@ export interface BastionHostStackProps extends StackProps {
   adInfo: AdInformation,
   activeDirectory: directory.CfnMicrosoftAD,
   activeDirectoryAdminPasswordSecret: secretsmanager.Secret
-  sqlServerRdsInstance: rds.DatabaseInstance,
   domiainJoinSsmDocument: ssm.CfnDocument,
+  sqlServerRdsInstance: rds.DatabaseInstance,
   credSpecParameter: ssm.StringParameter,
-  credentialsFetcherIdentitySecret: secretsmanager.Secret
+  domainlessIdentitySecret: secretsmanager.Secret
 }
 
 // Deploy a Windows EC2 instance to manage the Active Directory.
@@ -57,7 +56,8 @@ export class BastionHostStack extends Stack {
     configureAdContent = replaceAdVariables(configureAdContent);
     generateCredspecContent = replaceAdVariables(generateCredspecContent);
     generateCredspecContent = generateCredspecContent
-      .replace('$SolutionId = ""', `$SolutionId = "${props.solutionId}"`);
+      .replace('$SolutionId = ""', `$SolutionId = "${props.solutionId}"`)
+      .replace('$DomainlessArn = ""', `$DomainlessArn = "${props.domainlessIdentitySecret.secretArn}"`);
     addEcsInstancesToAdContent = replaceAdVariables(addEcsInstancesToAdContent);
     loginSqlContent = loginSqlContent
       .replace(/ad\\admin/gi, `${props.adInfo.domainName.split('.')[0]}\\${props.adInfo.adminUsername}`)
@@ -90,7 +90,7 @@ export class BastionHostStack extends Stack {
       'Write-Output "Getting Active Directory credentials..."',
       `$adAdminPasswordSecret = Get-SECSecretValue -SecretId "${props.activeDirectoryAdminPasswordSecret.secretName}"`,
       `$adAdminPassword = ConvertTo-SecureString $adAdminPasswordSecret.SecretString  -AsPlainText -Force`,
-      `$gmsaUserSecret = Get-SECSecretValue -SecretId "${props.credentialsFetcherIdentitySecret.secretName}"`,
+      `$gmsaUserSecret = Get-SECSecretValue -SecretId "${props.domainlessIdentitySecret.secretName}"`,
       `$gmsaUserName =  $(ConvertFrom-Json $gmsaUserSecret.SecretString).username`,
       `$gmsaUserPassword = ConvertTo-SecureString  $(ConvertFrom-Json $gmsaUserSecret.SecretString).password -AsPlainText -Force`,
       `$sqlServerAdminPasswordSecret = Get-SECSecretValue -SecretId "${props.sqlServerRdsInstance.secret?.secretName}"`,
@@ -133,7 +133,7 @@ export class BastionHostStack extends Stack {
 
     // Allow the AD management instance access to the Secrets used by the User Data.
     props.activeDirectoryAdminPasswordSecret.grantRead(directoryManagementInstance);
-    props.credentialsFetcherIdentitySecret.grantRead(directoryManagementInstance);
+    props.domainlessIdentitySecret.grantRead(directoryManagementInstance);
     props.sqlServerRdsInstance.secret?.grantRead(directoryManagementInstance);
 
     // Allow the AD management instance to invoke AWS-JoinDirectoryServiceDomain SSM Documment.
@@ -196,5 +196,30 @@ export class BastionHostStack extends Stack {
 
   private parsePowershellFile(fileContent: string) {
     return fileContent.replace(/\$/gi, '\`$');
+  }
+
+  /**
+ * Removes a "`" character that is added to between the '$DomainlessArn = "' and the Fn::ImportValue.
+ * This is a escape character in PowerShell, so it alters the value of the ARN default value replaced in the script.
+ * This problem apears to only happen when replacing text in the external scripts with a CFN reference. If used directly in the UserData block this doesn't happen.
+ */
+  protected _toCloudFormation() {
+    const cf = super._toCloudFormation();
+
+    for (const key in cf.Resources) {
+      const cfResource = cf.Resources[key];
+
+      if (cfResource.Type === "AWS::EC2::Instance") {
+        for (let i = 0; i < cfResource.Properties.UserData['Fn::Base64']['Fn::Join'][1].length; i++) {
+          const userDataBlock = cfResource.Properties.UserData['Fn::Base64']['Fn::Join'][1][i];
+
+          if (typeof (userDataBlock) === 'string') {
+            cfResource.Properties.UserData['Fn::Base64']['Fn::Join'][1][i] = userDataBlock.replace('$DomainlessArn = "`', '$DomainlessArn = "');
+          }
+        }
+      }
+    }
+
+    return cf;
   }
 }

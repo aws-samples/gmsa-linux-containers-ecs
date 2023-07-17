@@ -17,7 +17,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 export interface InfrastructureStackProps extends StackProps {
   solutionId: string
   ecsInstanceKeyPairName: string,
-  domianJoinedEcsInstances: string
+  domainJoinEcsInstances: boolean,
 }
 
 export interface AdInformation {
@@ -45,8 +45,8 @@ export class InfrastructureStack extends Stack {
   // Reference to the SSM parameter containing the gMSA CredSpec
   public credSpecParameter: ssm.StringParameter;
 
-  // Reference to the AWS Secret containing the AD user password that can retreive gMSA passwords
-  public credentialsFetcherIdentitySecret: secretsmanager.Secret;
+  // Reference to the AWS Secret containing the AD user password that can retreive gMSA passwords in domainless mode
+  public domainlessIdentitySecret: secretsmanager.Secret;
 
   // Reference to the Security Group used by the Amazon ECS ASG
   public ecsAsgSecurityGroup: ec2.ISecurityGroup;
@@ -144,9 +144,9 @@ export class InfrastructureStack extends Stack {
       containerInsights: true
     });
 
-    // Create a secret to hold the AD username and password used by credentials fetcher to authenticate to the AD in scalability mode
-    let credentialsFetcherIdentitySecret: cdk.aws_secretsmanager.Secret | null = null;
-    credentialsFetcherIdentitySecret = new secretsmanager.Secret(this, 'cred-fetcher-identity-secret',
+    // Create a secret to hold the AD username and password used by credentials fetcher to authenticate to the AD in domainless mode
+    let domainlessUserIdentitySecret: cdk.aws_secretsmanager.Secret | null = null;
+    domainlessUserIdentitySecret = new secretsmanager.Secret(this, 'cred-fetcher-identity-secret',
       {
         secretName: `${props.solutionId}/credentials-fetcher-identity`,
         generateSecretString: {
@@ -154,6 +154,7 @@ export class InfrastructureStack extends Stack {
           generateStringKey: 'password',
           secretStringTemplate: JSON.stringify({
             username: adInfo.gmsaCredentialsFetcherUsername,
+            domainName: adInfo.domainName
           }),
         }
       }
@@ -162,17 +163,15 @@ export class InfrastructureStack extends Stack {
     // Define the User Data for the ASG
     const ecsUserData = ec2.UserData.forLinux();
     ecsUserData.addCommands(
-       props.domianJoinedEcsInstances === '0' ? `echo "CREDENTIALS_FETCHER_SECRET_NAME_FOR_DOMAINLESS_GMSA=${credentialsFetcherIdentitySecret?.secretName}" >> /etc/ecs/ecs.config` : '',
       'echo "ECS_GMSA_SUPPORTED=true" >> /etc/ecs/ecs.config',
 
       'ps auxwwww',
       'echo "sleeping for 60 secs..."',
       'sleep 60s', // Needed to avoid RPM lock error      
       'ps auxwwww',
-      'sudo dnf update -y',
-      'sudo dnf install dotnet realmd oddjob oddjob-mkhomedir sssd adcli krb5-workstation samba-common-tools credentials-fetcher -y',
+      'dnf install dotnet realmd oddjob oddjob-mkhomedir sssd adcli krb5-workstation samba-common-tools credentials-fetcher -y',
 
-      'sudo systemctl start credentials-fetcher'
+      'systemctl start credentials-fetcher'
     );
 
     // Define the ASG
@@ -193,8 +192,9 @@ export class InfrastructureStack extends Stack {
     // Add policy for instances to be managed via SSM
     ecsAutoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
 
+    // TODO: Remove after validating is not needed
     // Grat access for the credentials fecther secret to the ECS ASG
-    credentialsFetcherIdentitySecret?.grantRead(ecsAutoScalingGroup.role);
+    // domainlessUserIdentitySecret?.grantRead(ecsAutoScalingGroup.role);
 
     // Associate the ASG to the ECS cluster
     const ecsCapacityProvider = new ecs.AsgCapacityProvider(this, 'ecs-cluster-asg-capacity-provider', {
@@ -256,14 +256,14 @@ export class InfrastructureStack extends Stack {
               "runCommand": [
                 'echo "Waiting 80 seconds..."',
                 'sleep 80s',
-                'sudo dnf install jq -y',
+                'dnf install jq -y',
                 'echo "Retrieving AD admin password..."',
                 `adAdminPassword=$(aws secretsmanager get-secret-value --secret-id ${activeDirectoryAdminPasswordSecret.secretName})`,
                 'echo "Joining the AD domain..."',
-                `echo "$\{adAdminPassword}" | jq -r '.SecretString' | sudo realm join -U ${adInfo.adminUsername}@${activeDirectory.name.toUpperCase()} ${activeDirectory.name} --verbose`,
+                `echo "$\{adAdminPassword}" | jq -r '.SecretString' | realm join -U ${adInfo.adminUsername}@${activeDirectory.name.toUpperCase()} ${activeDirectory.name} --verbose`,
                 'echo "Restaring the ECS container instance..."',
-                'sudo systemctl stop ecs',
-                'sudo systemctl start ecs'
+                'systemctl stop ecs',
+                'systemctl start ecs'
               ]
             }
           }
@@ -275,7 +275,7 @@ export class InfrastructureStack extends Stack {
     // ------------------------------------------------------------------------------------------------------------------
     // Configure the ECS cluster instances to join the Managed AD domain
     //    This will happen only if the appropiate environment variable is set
-    if (props.domianJoinedEcsInstances !== '0') {
+    if (props.domainJoinEcsInstances) {
 
       // Create SSM association to run SSM document for all tagged instances
       const ecsInstanceTagKey = 'ad-domain-join';
@@ -321,12 +321,6 @@ export class InfrastructureStack extends Stack {
     }
 
     // ------------------------------------------------------------------------------------------------------------------
-    // Create the container repository for the application
-    const webSiteRepository = new ecr.Repository(this, 'web-site-repository', {
-      repositoryName: `${props.solutionId}/web-site`,
-    });
-
-    // ------------------------------------------------------------------------------------------------------------------
     // Create an SSM parameter to hold the CredSpec file
     //    This secret will be used by the credentials fetcher inside ECS to retreive gMSA passwords
     const credSpecParameter = new ssm.StringParameter(this, 'credspec-ssm-parameter', {
@@ -346,6 +340,6 @@ export class InfrastructureStack extends Stack {
     this.domiainJoinSsmDocument = domainJoinSsmDocument;
     this.ecsAsgSecurityGroup = ecsAutoScalingGroup.connections.securityGroups[0];
     this.credSpecParameter = credSpecParameter;
-    this.credentialsFetcherIdentitySecret = credentialsFetcherIdentitySecret;
+    this.domainlessIdentitySecret = domainlessUserIdentitySecret;
   }
 }

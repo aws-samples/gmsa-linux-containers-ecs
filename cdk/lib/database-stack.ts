@@ -15,14 +15,12 @@ export interface DatabaseStackProps extends StackProps {
   solutionId: string,
   vpc: ec2.Vpc,
   activeDirectoryId: string,
+  ecsAsgSecurityGroup: ec2.ISecurityGroup,
 }
 export class DatabaseStack extends Stack {
 
   // Reference to the SQL Server RDS instance created
   public sqlServerInstance: rds.DatabaseInstance;
-
-  // Reference to the SQL Server RDS instance's  Security Group
-  public sqlServerSecurityGroup: ec2.ISecurityGroup
 
   // Name of the admin user configured in the RDS SQL Server instance
   public sqlServerInstanceAdminUser = 'web_dbo';
@@ -68,20 +66,22 @@ export class DatabaseStack extends Stack {
     });
 
     // Join the SQL server to the domain. This isn't available in CDK yet, so use the CloudFormation primitives.
-
     // In order to join the server to the domain, we need to know the ID of the Active Directory.
     const cfnSqlServerInstance = sqlServerInstance.node.defaultChild as rds.CfnDBInstance;
     cfnSqlServerInstance.domain = props.activeDirectoryId;
     cfnSqlServerInstance.domainIamRoleName = dbRole.roleName;
 
+    // Allow communication from then ECS ASG to the RDS SQL Server database
+    sqlServerInstance.connections.securityGroups[0].connections.allowFrom(props.ecsAsgSecurityGroup, ec2.Port.tcp(1433));
+
+
     // Output information about the database instance.
     new cdk.CfnOutput(this, 'DBInstanceIdentifier', { value: sqlServerInstance.instanceIdentifier });
     new cdk.CfnOutput(this, 'DBInstanceEndpointAddress', { value: sqlServerInstance.dbInstanceEndpointAddress });
     new cdk.CfnOutput(this, 'DBInstanceCredentialsSecretARN', { value: sqlServerInstance.secret?.secretArn ?? '' });
-
+    
 
     // Exposes the SQL Server instance for higher level constructs
     this.sqlServerInstance = sqlServerInstance;
-    this.sqlServerSecurityGroup = sqlServerInstance.connections.securityGroups[0];
   }
 }

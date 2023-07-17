@@ -8,9 +8,6 @@ import { DatabaseStack } from '../lib/database-stack';
 import { ApplicationStack } from '../lib/application-stack';
 import { BastionHostStack } from '../lib/bastion-stack';
 
-import { AwsSolutionsChecks } from 'cdk-nag'
-import { Aspects } from 'aws-cdk-lib';
-
 const envConfig = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_DEFAULT_REGION
@@ -34,7 +31,7 @@ const infraStack = new InfrastructureStack(app, `${config.props.SOLUTION_ID}-inf
   env: envConfig,
   solutionId: config.props.SOLUTION_ID,
   ecsInstanceKeyPairName: config.props.EC2_INSTANCE_KEYPAIR_NAME,
-  domianJoinedEcsInstances: config.props.DOMAIN_JOIN_ECS
+  domainJoinEcsInstances: config.props.DOMAIN_JOIN_ECS === '1'
 });
 
 // Create the SQL Server RDS instance 
@@ -42,11 +39,12 @@ const dbStack = new DatabaseStack(app, `${config.props.SOLUTION_ID}-database`, {
   env: envConfig,
   solutionId: config.props.SOLUTION_ID,
   vpc: infraStack.vpc,
-  activeDirectoryId: infraStack.activeDirectory.attrAlias
+  activeDirectoryId: infraStack.activeDirectory.attrAlias,
+  ecsAsgSecurityGroup: infraStack.ecsAsgSecurityGroup
 });
 
 //Create Bastio  Host / AD Admin Instance
-const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bastion`, {  
+const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bastion`, {
   env: envConfig,
   solutionId: config.props.SOLUTION_ID,
   vpc: infraStack.vpc,
@@ -55,24 +53,25 @@ const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bast
   adManagementInstanceAccessIp: config.props.MY_SG_INGRESS_IP,
   activeDirectory: infraStack.activeDirectory,
   activeDirectoryAdminPasswordSecret: infraStack.activeDirectoryAdminPasswordSecret,
-  sqlServerRdsInstance: dbStack.sqlServerInstance,
   domiainJoinSsmDocument: infraStack.domiainJoinSsmDocument,
+  sqlServerRdsInstance: dbStack.sqlServerInstance,
   credSpecParameter: infraStack.credSpecParameter,
-  credentialsFetcherIdentitySecret: infraStack.credentialsFetcherIdentitySecret
+  domainlessIdentitySecret: infraStack.domainlessIdentitySecret
 });
 
-if (config.props.DEPLOY_APP === '1') {
-  new ApplicationStack(app, `${config.props.SOLUTION_ID}-application`, {
-    env: envConfig,
-    solutionId: config.props.SOLUTION_ID,
-    vpc: infraStack.vpc,
-    ecsAsgSecurityGroup: infraStack.ecsAsgSecurityGroup,
-    domainName: infraStack.activeDirectory.name,
-    dbInstanceName: dbStack.sqlServerInstance.instanceIdentifier,
-    dbInstanceSecurityGroup: dbStack.sqlServerSecurityGroup,
-    credSpecParameter: infraStack.credSpecParameter
-  });
+if(config.props.DEPLOY_APP === '1'){
+  console.warn(`Revision "${config.props.APP_TD_REVISION}" of the Amazon ECS task definition is been used in the Amazon ECS service. If you want a different revision, set the APP_TD_REVISION environment variable to a different value.`)
 }
-else {
-  console.log('DEPLOY_APP not set, skipping application deployment.');
-}
+
+const appStack = new ApplicationStack(app, `${config.props.SOLUTION_ID}-application`, {
+  env: envConfig,
+  solutionId: config.props.SOLUTION_ID,
+  vpc: infraStack.vpc,
+  ecsAsgSecurityGroup: infraStack.ecsAsgSecurityGroup,
+  areEcsInstancesDomianJoined: config.props.DOMAIN_JOIN_ECS === '1',
+  domainName: infraStack.activeDirectory.name,
+  dbInstanceName: dbStack.sqlServerInstance.instanceIdentifier,
+  credSpecParameter: infraStack.credSpecParameter,
+  domainlessIdentitySecret: infraStack.domainlessIdentitySecret,
+  taskDefinitionRevision: config.props.APP_TD_REVISION
+});

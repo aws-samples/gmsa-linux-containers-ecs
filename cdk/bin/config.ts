@@ -11,7 +11,8 @@ if (!process.env.MY_SG_INGRESS_IP) {
 export const props = {    
     SOLUTION_ID: 'amazon-ecs-gmsa-linux' || process.env.SOLUTION_ID,
     EC2_INSTANCE_KEYPAIR_NAME: process.env.EC2_INSTANCE_KEYPAIR_NAME,
-    MY_SG_INGRESS_IP: process.env.MY_SG_INGRESS_IP,
+    MY_SG_INGRESS_IP: process.env.MY_SG_INGRESS_IP,    
+    DOMAIN_JOIN_ECS: process.env.DOMAIN_JOIN_ECS || '0',
     DEPLOY_APP: process.env.DEPLOY_APP || '0',
-    DOMAIN_JOIN_ECS: process.env.DOMAIN_JOIN_ECS || '1',
+    APP_TD_REVISION: process.env.APP_TD_REVISION || '2',
 }

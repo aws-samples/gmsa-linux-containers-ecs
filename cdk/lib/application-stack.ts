@@ -11,23 +11,27 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecs_patterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+import * as config from '../bin/config'
 
 export interface ApplicationStackProps extends StackProps {
   solutionId: string,
   vpc: ec2.Vpc,
   ecsAsgSecurityGroup: ec2.ISecurityGroup,
+  areEcsInstancesDomianJoined: boolean,
   domainName: string,
   dbInstanceName: string,
-  dbInstanceSecurityGroup: ec2.ISecurityGroup,
-  credSpecParameter: ssm.StringParameter
+  credSpecParameter: ssm.StringParameter,
+  domainlessIdentitySecret: secretsmanager.Secret,
+  taskDefinitionRevision: string
 }
 
 export class ApplicationStack extends Stack {
   constructor(scope: Construct, id: string, props: ApplicationStackProps) {
     super(scope, id, props);
 
-    const webSiteRepositoryArn: string = cdk.Arn.format({ service: 'ecr', resource: 'repository', resourceName: `${props.solutionId}/web-site` }, this);
-
+    // Get reference to the ECS cluster.
     const cluster = ecs.Cluster.fromClusterAttributes(this, 'ecs-cluster', {
       clusterName: props.solutionId,
       vpc: props.vpc,
@@ -41,15 +45,16 @@ export class ApplicationStack extends Stack {
     });
     taskExecutionRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy'));
     props.credSpecParameter.grantRead(taskExecutionRole);
+    props.domainlessIdentitySecret.grantRead(taskExecutionRole);
 
-    // Get a reference to the repository.
-    const webSiteRepository = ecr.Repository.fromRepositoryAttributes(this, 'web-site-repository', {
-      repositoryArn: webSiteRepositoryArn,
-      repositoryName: `${props.solutionId}/web-site`
+    // Create the container repository for the application
+    const webSiteRepository = new ecr.Repository(this, 'web-site-repository', {
+      repositoryName: `${props.solutionId}/web-site`,
     });
 
     // Create a ECS task. Include an application scratch volume.
-    const ec2Task = new ecs.Ec2TaskDefinition(this, 'web-site-task', {
+    const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'web-site-task', {
+      family: 'amazon-ecs-gmsa-linux-web-site-task',
       executionRole: taskExecutionRole,
       volumes: [
         {
@@ -60,7 +65,7 @@ export class ApplicationStack extends Stack {
     });
 
     // Add the web application container to the task definition.
-    const webSiteContainer = ec2Task.addContainer('web-site-container', {
+    const webSiteContainer = ec2TaskDefinition.addContainer('web-site-container', {
       image: ecs.ContainerImage.fromEcrRepository(webSiteRepository, 'latest'),
       memoryLimitMiB: 512,
       healthCheck: {
@@ -72,6 +77,9 @@ export class ApplicationStack extends Stack {
       dockerSecurityOptions: [
         `credentialspec:${props.credSpecParameter.parameterArn}`
       ],
+      // credentialSpecs: [
+      //   `${props.areEcsInstancesDomianJoined ? 'credentialspec' : 'credentialspecdomainless'}:${props.credSpecParameter.parameterArn}`
+      // ],
       environment: {
         "ASPNETCORE_ENVIRONMENT": "Development",
         // To use Kerberos authenication, you should use a domain FQDM to refere to the SQL Server,
@@ -82,24 +90,48 @@ export class ApplicationStack extends Stack {
     webSiteContainer.addPortMappings({ containerPort: 80 });
     webSiteContainer.addMountPoints({ sourceVolume: 'application_scratch', containerPath: '/var/scratch', readOnly: true });
 
+    if (config.props.DEPLOY_APP === '1') {
 
-    // Create a load-balanced service.    
-    const loadBalancedEcsService = new ecs_patterns.ApplicationLoadBalancedEc2Service(this, 'web-site-ec2-service', {
-      cluster: cluster,
-      taskDefinition: ec2Task,
-      desiredCount: 1,
-      publicLoadBalancer: true,
-      openListener: true,
-      enableExecuteCommand: true
-    });
-    loadBalancedEcsService.targetGroup.configureHealthCheck({
-      path: '/Privacy'
-    });
+      // Create a load-balanced service.    
+      const loadBalancedEcsService = new ecs_patterns.ApplicationLoadBalancedEc2Service(this, 'web-site-ec2-service', {
+        cluster: cluster,
+        taskDefinition: ec2TaskDefinition,
+        desiredCount: 1,
+        publicLoadBalancer: true,
+        openListener: true,
+        enableExecuteCommand: true
+      });      
+      loadBalancedEcsService.targetGroup.configureHealthCheck({ path: '/Privacy' });
 
-    // Allow communication from the ECS service's ELB to the ECS ASG
-    loadBalancedEcsService.loadBalancer.connections.allowTo(props.ecsAsgSecurityGroup, ec2.Port.allTcp());
+      // Updates the task definition revison based on the global environment variable.
+      (loadBalancedEcsService.service.node.tryFindChild('Service') as ecs.CfnService)?.addPropertyOverride('TaskDefinition', `arn:aws:ecs:${this.region}:${this.account}:task-definition/${ec2TaskDefinition.family}:${props.taskDefinitionRevision}`);
 
-    // Allow communication from then ECS ASG to the RDS SQL Server database
-    props.dbInstanceSecurityGroup.connections.allowFrom(props.ecsAsgSecurityGroup, ec2.Port.tcp(1433));
+      // Allow communication from the ECS service's ELB to the ECS ASG
+      loadBalancedEcsService.loadBalancer.connections.allowTo(props.ecsAsgSecurityGroup, ec2.Port.allTcp());
+    }
+    else {
+      console.log('DEPLOY_APP not set, skipping Amazon ECS service deployment.');
+    }
   }
+
+  /**
+   * WORKAROUND to lack of AWS CDK L2 construct support
+   * Replaces the 'DockerSecurityOptions' property of the first container in "web-site-task" with the new, and still unsupported, 'CredentialSpecOptions' property. 
+   * This enables support for domainless gMSA while the L2 construct are released.
+   */
+  // protected _toCloudFormation() {
+  //   const cf = super._toCloudFormation();
+
+  //   for (const key in cf.Resources) {
+  //     const cfResource = cf.Resources[key];
+
+  //     if (cfResource.Type === "AWS::ECS::TaskDefinition") {
+  //       console.log("Patching ECS task definition...");
+  //       cfResource.Properties.ContainerDefinitions[0].CredentialSpecs = cfResource.Properties.ContainerDefinitions[0].DockerSecurityOptions;
+  //       cfResource.Properties.ContainerDefinitions[0].DockerSecurityOptions = undefined;
+  //       console.log("Patching complete.");
+  //     }
+  //   }
+  //   return cf;
+  // }
 }
