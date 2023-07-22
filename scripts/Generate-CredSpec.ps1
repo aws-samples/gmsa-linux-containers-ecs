@@ -26,7 +26,7 @@ $credSpec = Get-Content $credSpecFile.Path -Raw | ConvertFrom-Json
 
 # Adds "HostAccountConfig" if domainless AWS Secret/AWS Parameter was provided
 if ($DomainlessArn) {
-    Write-Output "Adding domainless credentilas to credential spec..."
+    Write-Output "Adding domainless configuration to credential spec..."
     $credSpec.ActiveDirectoryConfig | Add-Member  -NotePropertyName HostAccountConfig -NotePropertyValue @{
         PortableCcgVersion = "1";
         PluginGUID         = "{859E1386-BDB4-49E8-85C7-3070B13920E1}";

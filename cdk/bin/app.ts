@@ -54,6 +54,7 @@ const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bast
   activeDirectory: infraStack.activeDirectory,
   activeDirectoryAdminPasswordSecret: infraStack.activeDirectoryAdminPasswordSecret,
   domiainJoinSsmDocument: infraStack.domiainJoinSsmDocument,
+  domainJoinTag: infraStack.adDomainJoinTagKey,
   sqlServerRdsInstance: dbStack.sqlServerInstance,
   credSpecParameter: infraStack.credSpecParameter,
   domainlessIdentitySecret: infraStack.domainlessIdentitySecret

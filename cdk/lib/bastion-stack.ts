@@ -26,6 +26,7 @@ export interface BastionHostStackProps extends StackProps {
   activeDirectory: directory.CfnMicrosoftAD,
   activeDirectoryAdminPasswordSecret: secretsmanager.Secret
   domiainJoinSsmDocument: ssm.CfnDocument,
+  domainJoinTag: string,
   sqlServerRdsInstance: rds.DatabaseInstance,
   credSpecParameter: ssm.StringParameter,
   domainlessIdentitySecret: secretsmanager.Secret
@@ -111,8 +112,7 @@ export class BastionHostStack extends Stack {
       'Write-Output "Installing Microsoft SQL Server Management Studio..."',
       'choco install sql-server-management-studio',
 
-      'Write-Output "Joining instance to the Active Directory domain..."',
-      `Send-SSMCommand -InstanceId (Invoke-WebRequest http://169.254.169.254/latest/meta-data/instance-id -UseBasicParsing).Content -DocumentName ${props.domiainJoinSsmDocument.ref}`
+      'Write-Output "Configuration complete."',
     );
     const windowsServerImage = ec2.MachineImage.latestWindows(ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE, {
       userData: userData
@@ -186,6 +186,9 @@ export class BastionHostStack extends Stack {
         ],
       })
     );
+
+    // Add appropiate tags to automatically join the EC2 instance to the AD domain.
+    cdk.Tags.of(directoryManagementInstance).add(props.domainJoinTag, props.solutionId);
   }
 
 

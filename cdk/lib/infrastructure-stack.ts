@@ -51,6 +51,9 @@ export class InfrastructureStack extends Stack {
   // Reference to the Security Group used by the Amazon ECS ASG
   public ecsAsgSecurityGroup: ec2.ISecurityGroup;
 
+  // Tag used to automatically join EC2 instances to the AD domain.
+  public adDomainJoinTagKey = 'ad-domain-join';
+
   // Provides information on the AD objects created or to be created
   public adInfo: AdInformation;
 
@@ -274,31 +277,33 @@ export class InfrastructureStack extends Stack {
 
     // ------------------------------------------------------------------------------------------------------------------
     // Configure the ECS cluster instances to join the Managed AD domain
+
+    // Create SSM association to run SSM document for all tagged instances
+    
+    const ecsAssociation = new ssm.CfnAssociation(this, 'ecs-cluster-asg-domain-join-ssm-association', {
+      associationName: `${props.solutionId}-AD-Domian-Join`,
+      name: domainJoinSsmDocument.ref,
+      targets: [{
+        key: `tag:${this.adDomainJoinTagKey}`,
+        values: [props.solutionId],
+      }]
+    });
+
     //    This will happen only if the appropiate environment variable is set
     if (props.domainJoinEcsInstances) {
 
-      // Create SSM association to run SSM document for all tagged instances
-      const ecsInstanceTagKey = 'ad-domain-join';
-      const ecsAssociation = new ssm.CfnAssociation(this, 'ecs-cluster-asg-domain-join-ssm-association', {
-        associationName: `${props.solutionId}-AD-Domian-Join`,
-        name: domainJoinSsmDocument.ref,
-        targets: [{
-          key: `tag:${ecsInstanceTagKey}`,
-          values: [props.solutionId],
-        }]
-      });
       // TODO: Remove when seamless domain join is avaliable for AL2023
       const ecsAssociationAlt = new ssm.CfnAssociation(this, 'ecs-cluster-asg-domain-join-ssm-association-alt', {
         associationName: `${props.solutionId}-AD-Domian-Join-Alt`,
         name: domainJoinSsmDocumentAtl.ref,
         targets: [{
-          key: `tag:${ecsInstanceTagKey}`,
+          key: `tag:${this.adDomainJoinTagKey}`,
           values: [props.solutionId],
         }]
       });
 
       // Applies the tag to the ECS instances
-      cdk.Tags.of(ecsAutoScalingGroup).add(ecsInstanceTagKey, props.solutionId);
+      cdk.Tags.of(ecsAutoScalingGroup).add(this.adDomainJoinTagKey, props.solutionId);
 
       // Grants read access for the seamless domain join secret to the ECS ASG
       activeDirectorySeamlessJoinSecret.grantRead(ecsAutoScalingGroup.role);
