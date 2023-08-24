@@ -75,14 +75,14 @@ export class InfrastructureStack extends Stack {
     // ------------------------------------------------------------------------------------------------------------------
     // Create the VPC to host all components of the sample
     const vpc = new ec2.Vpc(this, 'vpc', {
-      cidr: VPC_SUBNET_CIDR,
+      ipAddresses: ec2.IpAddresses.cidr(VPC_SUBNET_CIDR),
       subnetConfiguration: [
         {
           subnetType: ec2.SubnetType.PUBLIC,
           name: 'Public'
         },
         {
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           name: 'Private'
         }
       ],

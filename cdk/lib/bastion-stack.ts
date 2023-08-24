@@ -85,7 +85,7 @@ export class BastionHostStack extends Stack {
       `Set-Content -Path "C:\\SampleConfig\\Configure-AD.ps1" -Value @"\n${this.parsePowershellFile(configureAdContent)}\n"@`,
       `Set-Content -Path "C:\\SampleConfig\\Configure-Database.ps1" -Value @"\n${this.parsePowershellFile(configureDbContent)}\n"@`,
       `Set-Content -Path "C:\\SampleConfig\\login.sql" -Value @"\n${loginSqlContent}\n"@`,
-      `Set-Content -Path "C:\\SampleConfig\\Generate-CredSpec.ps1" -Value @"\n${this.parsePowershellFile(generateCredspecContent)}\n"@`,
+      `Set-Content -Path "C:\\SampleConfig\\Generate-CredSpec.ps1" -Value @"\n${this.parsePowershellAndFixQuotes(generateCredspecContent)}\n"@`,
       `Set-Content -Path "C:\\SampleConfig\\Add-ECSContainerInstancesToADGroup.ps1" -Value @"\n${this.parsePowershellFile(addEcsInstancesToAdContent)}\n"@`,
 
       'Write-Output "Getting Active Directory credentials..."',
@@ -201,12 +201,17 @@ export class BastionHostStack extends Stack {
     return fileContent.replace(/\$/gi, '\`$');
   }
 
+  private parsePowershellAndFixQuotes(fileContent: string) {
+    fileContent = this.parsePowershellFile(fileContent);
+    return fileContent.replace('$DomainlessArn = "`', '$DomainlessArn = "');
+  }
+
   /**
  * Removes a "`" character that is added to between the '$DomainlessArn = "' and the Fn::ImportValue.
  * This is a escape character in PowerShell, so it alters the value of the ARN default value replaced in the script.
  * This problem apears to only happen when replacing text in the external scripts with a CFN reference. If used directly in the UserData block this doesn't happen.
  */
-  protected _toCloudFormation() {
+  /*protected _toCloudFormation() {
     const cf = super._toCloudFormation();
 
     for (const key in cf.Resources) {
@@ -224,5 +229,5 @@ export class BastionHostStack extends Stack {
     }
 
     return cf;
-  }
+  }*/
 }
