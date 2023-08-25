@@ -129,7 +129,7 @@ export class BastionHostStack extends Stack {
     directoryManagementInstance.connections.securityGroups[0].addIngressRule(ec2.Peer.ipv4(`${props.adManagementInstanceAccessIp}/32`), ec2.Port.tcp(3389));
 
     // Allow the AD management instance to connect to the database, so the management instance can be used to set up the database access.
-    directoryManagementInstance.connections.allowToDefaultPort(props.sqlServerRdsInstance, 'Consider removing this rule after the database deployment is complete.')
+    directoryManagementInstance.connections.allowTo(props.sqlServerRdsInstance, ec2.Port.tcp(1433), 'from AD management instance');
 
     // Allow the AD management instance access to the Secrets used by the User Data.
     props.activeDirectoryAdminPasswordSecret.grantRead(directoryManagementInstance);
