@@ -82,11 +82,11 @@ export class BastionHostStack extends Stack {
       'Write-Output "Writing support scripts..."',
       'Remove-Item "C:\\SampleConfig" -Force -Recurse -ErrorAction SilentlyContinue',
       'New-Item "C:\\SampleConfig" -itemType Directory',
-      `Set-Content -Path "C:\\SampleConfig\\Configure-AD.ps1" -Value @"\n${this.parsePowershellFile(configureAdContent)}\n"@`,
-      `Set-Content -Path "C:\\SampleConfig\\Configure-Database.ps1" -Value @"\n${this.parsePowershellFile(configureDbContent)}\n"@`,
+      `Set-Content -Path "C:\\SampleConfig\\Configure-AD.ps1" -Value @"\n${this.escapePowershellScript(configureAdContent)}\n"@`,
+      `Set-Content -Path "C:\\SampleConfig\\Configure-Database.ps1" -Value @"\n${this.escapePowershellScript(configureDbContent)}\n"@`,
       `Set-Content -Path "C:\\SampleConfig\\login.sql" -Value @"\n${loginSqlContent}\n"@`,
-      `Set-Content -Path "C:\\SampleConfig\\Generate-CredSpec.ps1" -Value @"\n${this.parsePowershellAndFixQuotes(generateCredspecContent)}\n"@`,
-      `Set-Content -Path "C:\\SampleConfig\\Add-ECSContainerInstancesToADGroup.ps1" -Value @"\n${this.parsePowershellFile(addEcsInstancesToAdContent)}\n"@`,
+      `Set-Content -Path "C:\\SampleConfig\\Generate-CredSpec.ps1" -Value @"\n${this.escapePowershellScript(generateCredspecContent)}\n"@`,
+      `Set-Content -Path "C:\\SampleConfig\\Add-ECSContainerInstancesToADGroup.ps1" -Value @"\n${this.escapePowershellScript(addEcsInstancesToAdContent)}\n"@`,
 
       'Write-Output "Getting Active Directory credentials..."',
       `$adAdminPasswordSecret = Get-SECSecretValue -SecretId "${props.activeDirectoryAdminPasswordSecret.secretName}"`,
@@ -191,43 +191,15 @@ export class BastionHostStack extends Stack {
     cdk.Tags.of(directoryManagementInstance).add(props.domainJoinTag, props.solutionId);
   }
 
-
   private resourceArn(stack: cdk.Stack, service: string, options: { regionless?: boolean, accountless?: boolean } = {}) {
     return `arn:${stack.partition}:${service}:${options.regionless ? '' : stack.region}:${options.accountless ? '' : stack.account}`;
   }
 
-
-  private parsePowershellFile(fileContent: string) {
-    return fileContent.replace(/\$/gi, '\`$');
-  }
-
-  private parsePowershellAndFixQuotes(fileContent: string) {
-    fileContent = this.parsePowershellFile(fileContent);
-    return fileContent.replace('$DomainlessArn = "`', '$DomainlessArn = "');
-  }
-
   /**
- * Removes a "`" character that is added to between the '$DomainlessArn = "' and the Fn::ImportValue.
- * This is a escape character in PowerShell, so it alters the value of the ARN default value replaced in the script.
- * This problem apears to only happen when replacing text in the external scripts with a CFN reference. If used directly in the UserData block this doesn't happen.
- */
-  /*protected _toCloudFormation() {
-    const cf = super._toCloudFormation();
-
-    for (const key in cf.Resources) {
-      const cfResource = cf.Resources[key];
-
-      if (cfResource.Type === "AWS::EC2::Instance") {
-        for (let i = 0; i < cfResource.Properties.UserData['Fn::Base64']['Fn::Join'][1].length; i++) {
-          const userDataBlock = cfResource.Properties.UserData['Fn::Base64']['Fn::Join'][1][i];
-
-          if (typeof (userDataBlock) === 'string') {
-            cfResource.Properties.UserData['Fn::Base64']['Fn::Join'][1][i] = userDataBlock.replace('$DomainlessArn = "`', '$DomainlessArn = "');
-          }
-        }
-      }
-    }
-
-    return cf;
-  }*/
+   * Replaces all variable name '$' with '`$' in a PowerShell script.
+   * It skips any '$' followed by a special character, like CDK Token such as '${Token[TOKEN.823]}'
+   */
+  private escapePowershellScript(script: string) {
+    return script.replace(/\$(?![^a-zA-Z0-9_])/gi, '\`$');
+  }
 }
