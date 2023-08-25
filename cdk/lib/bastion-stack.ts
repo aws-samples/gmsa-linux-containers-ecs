@@ -197,9 +197,9 @@ export class BastionHostStack extends Stack {
 
   /**
    * Replaces all variable name '$' with '`$' in a PowerShell script.
-   * It skips any '$' followed by a special character, like CDK Token such as '${Token[TOKEN.823]}'
+   * It skips any CDK Token such as '${Token[TOKEN.823]}'
    */
   private escapePowershellScript(script: string) {
-    return script.replace(/\$(?![^a-zA-Z0-9_])/gi, '\`$');
+    return script.replace(/\$(?!{Token)/gi, '\`$');
   }
 }
