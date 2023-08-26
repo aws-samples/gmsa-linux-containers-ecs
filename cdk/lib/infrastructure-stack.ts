@@ -75,14 +75,14 @@ export class InfrastructureStack extends Stack {
     // ------------------------------------------------------------------------------------------------------------------
     // Create the VPC to host all components of the sample
     const vpc = new ec2.Vpc(this, 'vpc', {
-      cidr: VPC_SUBNET_CIDR,
+      ipAddresses: ec2.IpAddresses.cidr(VPC_SUBNET_CIDR),
       subnetConfiguration: [
         {
           subnetType: ec2.SubnetType.PUBLIC,
           name: 'Public'
         },
         {
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           name: 'Private'
         }
       ],
@@ -168,12 +168,11 @@ export class InfrastructureStack extends Stack {
     ecsUserData.addCommands(
       'echo "ECS_GMSA_SUPPORTED=true" >> /etc/ecs/ecs.config',
 
-      'ps auxwwww',
-      'echo "sleeping for 60 secs..."',
-      'sleep 60s', // Needed to avoid RPM lock error      
-      'ps auxwwww',
+      'echo "sleeping for 80 secs to avoid RPM lock error..."',
+      'sleep 80s',
       'dnf install dotnet realmd oddjob oddjob-mkhomedir sssd adcli krb5-workstation samba-common-tools credentials-fetcher -y',
 
+      'systemctl enable credentials-fetcher',
       'systemctl start credentials-fetcher'
     );
 

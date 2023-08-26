@@ -37,7 +37,7 @@ export class DatabaseStack extends Stack {
       licenseModel: rds.LicenseModel.LICENSE_INCLUDED,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.XLARGE),
       vpc: props.vpc,
-      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       credentials: rds.Credentials.fromGeneratedSecret(this.sqlServerInstanceAdminUser),
       autoMinorVersionUpgrade: true,
       storageEncrypted: true,
