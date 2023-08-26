@@ -172,8 +172,8 @@ export class InfrastructureStack extends Stack {
       'sleep 80s',
       'dnf install dotnet realmd oddjob oddjob-mkhomedir sssd adcli krb5-workstation samba-common-tools credentials-fetcher -y',
 
-      'systemctl start credentials-fetcher',
-      'systemctl enable credentials-fetcher'
+      'systemctl enable credentials-fetcher',
+      'systemctl start credentials-fetcher'
     );
 
     // Define the ASG
