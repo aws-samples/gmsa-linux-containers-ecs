@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using CdkDotnet.Models;
 
 namespace CdkDotnet
 {
@@ -14,7 +15,7 @@ namespace CdkDotnet
             //Debugger.Launch();
 
             var app = new App();
-            new CdkDotnetStack(app, "CdkDotnetStack", new StackProps
+            new CdkDotnetStack(app, ConfigProps.SOLUTION_ID, new StackProps
             {
                 // If you don't specify 'env', this stack will be environment-agnostic.
                 // Account/Region-dependent features and context lookups will not work,

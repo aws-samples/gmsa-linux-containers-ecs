@@ -12,7 +12,7 @@ namespace CdkDotnet
             : base(scope, id, props)
         {
             // Create shared infrastructure
-            var infraStack = new InfrastructureStack(this, $"{ConfigProps.SOLUTION_ID}-infrastructure",
+            var infraStack = new InfrastructureStack(this, $"infrastructure",
                 new InfrastructureStackProps
                 {
                     SolutionId = ConfigProps.SOLUTION_ID,
@@ -22,7 +22,7 @@ namespace CdkDotnet
             );
 
             // Create the SQL Server RDS instance 
-            var dbStack = new DatabaseStack(this, $"{ConfigProps.SOLUTION_ID}-database",
+            var dbStack = new DatabaseStack(this, $"database",
                 new DatabaseStackProps
                 {
                     SolutionId = ConfigProps.SOLUTION_ID,
@@ -33,7 +33,7 @@ namespace CdkDotnet
             );
 
             //Create Bastion Host / AD Admin Instance
-            var bastionStack = new BastionHostStack(this, $"{ConfigProps.SOLUTION_ID}-bastion",
+            var bastionStack = new BastionHostStack(this, $"bastion",
                 new BastionHostStackProps
                 {
                     SolutionId = ConfigProps.SOLUTION_ID,
@@ -56,7 +56,7 @@ namespace CdkDotnet
                 Console.WriteLine($"Revision \"{ConfigProps.APP_TD_REVISION}\" of the Amazon ECS task definition is been used in the Amazon ECS service.If you want a different revision, set the APP_TD_REVISION environment variable to a different value.");
             }
             
-            new ApplicationStack(this, $"{ConfigProps.SOLUTION_ID}-application",
+            new ApplicationStack(this, $"application",
                 new ApplicationStackProps
                 {
                     SolutionId = ConfigProps.SOLUTION_ID,
