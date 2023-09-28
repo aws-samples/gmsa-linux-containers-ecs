@@ -44,7 +44,7 @@ There are two modes in which you can support Windows authentication using gMSA f
         ```
 
 3. Based on your laguage poreference, perform one of the following tasks:
-    * **For typescript:** Open a terminal and in the **cdk-typescript** folder and execute the following command:
+    * **For Typescript:** Open a terminal and in the **cdk-typescript** folder and execute the following command:
       ``` bash
       npm install
       ```
@@ -111,7 +111,7 @@ Review the output of the script and take note of the revision number that was ju
 ## Deploy the application to Amazon ECS
 
 1. Go back to the terminal you used to deploy the infrastructure and run the following commands:
-    * If you are using Bash:
+    * **If you are using Bash:**
         ``` bash
         export DEPLOY_APP=1
         export APP_TD_REVISION=[TASK DEFINITION REVISION]
@@ -119,7 +119,7 @@ Review the output of the script and take note of the revision number that was ju
         cdk deploy "*" --require-approval "never"
         ```
 
-    * If you are using PowerShell:
+    * **If you are using PowerShell:**
         ``` powershell
         $Env:DEPLOY_APP = 1
         $Env:APP_TD_REVISION = [TASK DEFINITION REVISION]

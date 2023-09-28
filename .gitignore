@@ -408,4 +408,4 @@ yarn.lock
 cdk.out
 
 # ...but include CDK bin directories. 
-!**/cdk/bin
+!**/cdk-typescript/bin
