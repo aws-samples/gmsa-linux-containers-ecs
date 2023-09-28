@@ -185,11 +185,10 @@ namespace CdkDotnet.NestedStacks
             var ecsUserData = UserData.ForLinux();
             ecsUserData.AddCommands(
               "echo \"ECS_GMSA_SUPPORTED=true\" >> /etc/ecs/ecs.config",
-              "ps auxwwww",
-              "echo \"sleeping for 60 secs...\"",
-              "sleep 60s", // Needed to avoid RPM lock error      
-              "ps auxwwww",
+              "echo \"sleeping for 80 secs to avoid RPM lock error...\"",
+              "sleep 80s",   
               "dnf install dotnet realmd oddjob oddjob-mkhomedir sssd adcli krb5-workstation samba-common-tools credentials-fetcher -y",
+              "systemctl enable credentials-fetcher",
               "systemctl start credentials-fetcher"
             );
 

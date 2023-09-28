@@ -35,15 +35,10 @@ namespace CdkDotnet.NestedStacks
                   .Replace("$GmsaGroupName = \"\"", $"$GmsaGroupName = \"{props.AdInfo.GmsaAuthorizedGroupName}\"");
             };
 
-            var replaceForNewLineInPowershell = (string fileContent) =>
+            var escapePowershellScript = (string fileContent) =>
             {
-                return fileContent.Replace("$", "`$");
-            };
-
-            var fixQuotes = (string fileContent) =>
-            {
-                fileContent = replaceForNewLineInPowershell(fileContent);
-                return fileContent.Replace("$DomainlessArn = \"`", "$DomainlessArn = \"");
+                var regex = new System.Text.RegularExpressions.Regex(@"\$(?!{Token)");
+                return regex.Replace(fileContent, "`$");        
             };
 
             configureAdContent = replaceAdVariables(configureAdContent);
@@ -74,11 +69,11 @@ namespace CdkDotnet.NestedStacks
                 "Write-Output \"Writing support scripts...\"",
                 "Remove-Item \"C:\\SampleConfig\" -Force -Recurse -ErrorAction SilentlyContinue",
                 "New-Item \"C:\\SampleConfig\" -itemType Directory",
-                $"Set-Content -Path \"C:\\SampleConfig\\Configure-AD.ps1\" -Value @\"\n{replaceForNewLineInPowershell(configureAdContent)}\n\"@",
-                $"Set-Content -Path \"C:\\SampleConfig\\Configure-Database.ps1\" -Value @\"\n{replaceForNewLineInPowershell(configureDbContent)}\n\"@",
+                $"Set-Content -Path \"C:\\SampleConfig\\Configure-AD.ps1\" -Value @\"\n{escapePowershellScript(configureAdContent)}\n\"@",
+                $"Set-Content -Path \"C:\\SampleConfig\\Configure-Database.ps1\" -Value @\"\n{escapePowershellScript(configureDbContent)}\n\"@",
                 $"Set-Content -Path \"C:\\SampleConfig\\login.sql\" -Value @\"\n{loginSqlContent}\n\"@",
-                $"Set-Content -Path \"C:\\SampleConfig\\Generate-CredSpec.ps1\" -Value @\"\n{fixQuotes(generateCredspecContent)}\n\"@",
-                $"Set-Content -Path \"C:\\SampleConfig\\Add-ECSContainerInstancesToADGroup.ps1\" -Value @\"\n{replaceForNewLineInPowershell(addEcsInstancesToAdContent)}\n\"@",
+                $"Set-Content -Path \"C:\\SampleConfig\\Generate-CredSpec.ps1\" -Value @\"\n{escapePowershellScript(generateCredspecContent)}\n\"@",
+                $"Set-Content -Path \"C:\\SampleConfig\\Add-ECSContainerInstancesToADGroup.ps1\" -Value @\"\n{escapePowershellScript(addEcsInstancesToAdContent)}\n\"@",
                 
                 "Write-Output \"Getting Active Directory credentials...\"",
                 $"$adAdminPasswordSecret = Get-SECSecretValue -SecretId \"{props.ActiveDirectoryAdminPasswordSecret.SecretName}\"",
@@ -129,7 +124,7 @@ namespace CdkDotnet.NestedStacks
             directoryManagementInstance.Connections.SecurityGroups[0].AddIngressRule(Peer.Ipv4($"{props.AdManagementInstanceAccessIp}/32"), Port.Tcp(3389));
 
             // Allow the AD management instance to connect to the database, so the management instance can be used to set up the database access.
-            directoryManagementInstance.Connections.AllowToDefaultPort(props.SqlServerRdsInstance, "Consider removing this rule after the database deployment is complete.");
+            directoryManagementInstance.Connections.AllowTo(props.SqlServerRdsInstance, Port.Tcp(1433), "from AD management instance");
 
             // Allow the AD management instance access to the Secrets used by the User Data.
             props.ActiveDirectoryAdminPasswordSecret.GrantRead(directoryManagementInstance);
