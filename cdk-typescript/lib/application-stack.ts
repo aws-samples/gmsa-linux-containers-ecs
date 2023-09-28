@@ -115,7 +115,7 @@ export class ApplicationStack extends Stack {
   }
 
   /**
-   * WORKAROUND to lack of AWS CDK L2 construct support
+   * WORKAROUND for lack of AWS CDK L2 construct support
    * Replaces the 'DockerSecurityOptions' property of the first container in "web-site-task" with the new, and still unsupported, 'CredentialSpecOptions' property. 
    * This enables support for domainless gMSA while the L2 construct are released.
    */

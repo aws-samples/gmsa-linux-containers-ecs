@@ -27,31 +27,36 @@ There are two modes in which you can support Windows authentication using gMSA f
 
 ## Deploy the Infrastructure
 
-1. Clone the repo and open a terminal and in the **cdk** folder.
+1. Clone this repository and open the terminal and run the following commands, replace `{KEY_PAIR_NAME}` with your Amazon EC2 key pair name, and run the following commands: 
+    * **If you are using Bash**:
+        ``` bash
+        export AWS_DEFAULT_REGION={YOUR REGION}
+        export EC2_INSTANCE_KEYPAIR_NAME="{KEY_PAIR_NAME}"
+        export MY_SG_INGRESS_IP=$(curl checkip.amazonaws.com)
+        export DOMAIN_JOIN_ECS=0
+        ```
+    * **If you’re using PowerShell**:
+        ```powershell
+        $Env:AWS_DEFAULT_REGION = "{YOUR REGION}"
+        $Env:EC2_INSTANCE_KEYPAIR_NAME = "{KEY_PAIR_NAME}"
+        $Env:MY_SG_INGRESS_IP = $(Invoke-WebRequest -URI https://checkip.amazonaws.com).ToString().Trim()
+        $Env:DOMAIN_JOIN_ECS = 0   
+        ```
 
-2. Open a terminal in the **cdk** directory of the cloned repository, replace `{KEY_PAIR_NAME}` with your Amazon EC2 key pair name, and run the following commands if you are using Bash.
+3. Based on your laguage poreference, perform one of the following tasks:
+    * **For Typescript:** Open a terminal and in the **cdk-typescript** folder and execute the following command:
+      ``` bash
+      npm install
+      ```
+    * **For C#:** Open a terminal and in the **cdk-dotnet** folder and execute the following command:
+      ``` bash
+      dotnet build src
+      ```
+4. Execute deploy command for cdk project:
+    ``` bash
+    cdk deploy "*" --require-approval "never"
+    ```
 
-``` bash
-export AWS_DEFAULT_REGION={YOUR REGION}
-export EC2_INSTANCE_KEYPAIR_NAME="{KEY_PAIR_NAME}"
-export MY_SG_INGRESS_IP=$(curl checkip.amazonaws.com)
-export DOMAIN_JOIN_ECS=0
-
-npm install
-cdk deploy "*" --require-approval "never"
-```
-
-If you’re using PowerShell, run the following commands:
-
-```powershell
-$Env:AWS_DEFAULT_REGION = "{YOUR REGION}"
-$Env:EC2_INSTANCE_KEYPAIR_NAME = "{KEY_PAIR_NAME}"
-$Env:MY_SG_INGRESS_IP = $(Invoke-WebRequest -URI https://checkip.amazonaws.com).ToString().Trim()
-$Env:DOMAIN_JOIN_ECS = 0   
-
-npm install
-cdk deploy "*" --require-approval "never"
-```
 
 > **Note:** To use domain-joined mode, set the `DOMAIN_JOIN_ECS` variable to `1` before deploying the AWS CDK solution.
 
@@ -105,23 +110,22 @@ Review the output of the script and take note of the revision number that was ju
 
 ## Deploy the application to Amazon ECS
 
-1. Go back to the terminal you used to deploy the infrastructure and run the following commands if you are using Bash:
+1. Go back to the terminal you used to deploy the infrastructure and run the following commands:
+    * **If you are using Bash:**
+        ``` bash
+        export DEPLOY_APP=1
+        export APP_TD_REVISION=[TASK DEFINITION REVISION]
 
-``` bash
-export DEPLOY_APP=1
-export APP_TD_REVISION=[TASK DEFINITION REVISION]
+        cdk deploy "*" --require-approval "never"
+        ```
 
-cdk deploy "*" --require-approval "never"
-```
+    * **If you are using PowerShell:**
+        ``` powershell
+        $Env:DEPLOY_APP = 1
+        $Env:APP_TD_REVISION = [TASK DEFINITION REVISION]
 
-Run the following commands if you are using PowerShell:
-
-``` powershell
-$Env:DEPLOY_APP = 1
-$Env:APP_TD_REVISION = [TASK DEFINITION REVISION]
-
-cdk deploy "*" --require-approval "never"
-```
+        cdk deploy "*" --require-approval "never"
+        ```
 
 2. Once the deployment is complete, go to the CloudFormation console and click on the value of the output named like **websiteec2serviceServiceURLXXXXXXXX** to navigate to the web app. The web application will run and authenticate to the AD using the gMSA.
 
@@ -131,9 +135,9 @@ cdk deploy "*" --require-approval "never"
 
 1. Run this command in the terminal or PowerShell window::
 
-``` bash
-cdk destroy "*" --require-approval "never"
-```
+    ``` bash
+    cdk destroy "*" --require-approval "never"
+    ```
 
 2. Manually delete the manually created revision for the **amazon-ecs-gmsa-linux-web-site-task** Amazon ECS task definition, the **amazon-ecs-gmsa-linux/web-site** Amazon ECR repository, and the **amazon-ecs-gmsa-linux-infrastructure-vpcFlowLogCloudWatchLogGroupXXXXXXX-XXXXXXXXXXXX** Amazon CloudWatch log group .
 
