@@ -28,7 +28,7 @@ namespace CdkDotnet.NestedStacks
                 {
                     Engine = DatabaseInstanceEngine.SqlServerWeb(new SqlServerWebInstanceEngineProps { Version = SqlServerEngineVersion.VER_15 }),
                     LicenseModel = LicenseModel.LICENSE_INCLUDED,
-                    InstanceType = InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.XLARGE),
+                    InstanceType = Amazon.CDK.AWS.EC2.InstanceType.Of(InstanceClass.BURSTABLE3, InstanceSize.XLARGE),
                     Vpc = props.Vpc,
                     VpcSubnets = new SubnetSelection { SubnetType = SubnetType.PRIVATE_WITH_EGRESS },
                     Credentials = Credentials.FromGeneratedSecret(SqlServerInstanceAdminUser),
