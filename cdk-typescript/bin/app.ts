@@ -31,7 +31,8 @@ const infraStack = new InfrastructureStack(app, `${config.props.SOLUTION_ID}-inf
   env: envConfig,
   solutionId: config.props.SOLUTION_ID,
   ecsInstanceKeyPairName: config.props.EC2_INSTANCE_KEYPAIR_NAME,
-  domainJoinEcsInstances: config.props.DOMAIN_JOIN_ECS === '1'
+  domainJoinEcsInstances: config.props.DOMAIN_JOIN_ECS === '1',
+  useFargate: config.props.FARGATE === '1',
 });
 
 // Create the SQL Server RDS instance 
@@ -53,7 +54,7 @@ const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bast
   adManagementInstanceAccessIp: config.props.MY_SG_INGRESS_IP,
   activeDirectory: infraStack.activeDirectory,
   activeDirectoryAdminPasswordSecret: infraStack.activeDirectoryAdminPasswordSecret,
-  domiainJoinSsmDocument: infraStack.domiainJoinSsmDocument,
+  domiainJoinSsmDocument: infraStack.domainJoinSsmDocument,
   domainJoinTag: infraStack.adDomainJoinTagKey,
   sqlServerRdsInstance: dbStack.sqlServerInstance,
   credSpecParameter: infraStack.credSpecParameter,
@@ -69,7 +70,7 @@ const appStack = new ApplicationStack(app, `${config.props.SOLUTION_ID}-applicat
   solutionId: config.props.SOLUTION_ID,
   vpc: infraStack.vpc,
   ecsAsgSecurityGroup: infraStack.ecsAsgSecurityGroup,
-  areEcsInstancesDomianJoined: config.props.DOMAIN_JOIN_ECS === '1',
+  areEcsInstancesDomainJoined: config.props.DOMAIN_JOIN_ECS === '1',
   domainName: infraStack.activeDirectory.name,
   dbInstanceName: dbStack.sqlServerInstance.instanceIdentifier,
   credSpecParameter: infraStack.credSpecParameter,

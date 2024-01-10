@@ -18,8 +18,8 @@ import * as config from '../bin/config'
 export interface ApplicationStackProps extends StackProps {
   solutionId: string,
   vpc: ec2.Vpc,
-  ecsAsgSecurityGroup: ec2.ISecurityGroup,
-  areEcsInstancesDomianJoined: boolean,
+  ecsAsgSecurityGroup: ec2.ISecurityGroup | undefined,
+  areEcsInstancesDomainJoined: boolean,
   domainName: string,
   dbInstanceName: string,
   credSpecParameter: ssm.StringParameter,
@@ -106,8 +106,9 @@ export class ApplicationStack extends Stack {
       // Updates the task definition revison based on the global environment variable.
       (loadBalancedEcsService.service.node.tryFindChild('Service') as ecs.CfnService)?.addPropertyOverride('TaskDefinition', `arn:aws:ecs:${this.region}:${this.account}:task-definition/${ec2TaskDefinition.family}:${props.taskDefinitionRevision}`);
 
-      // Allow communication from the ECS service's ELB to the ECS ASG
-      loadBalancedEcsService.loadBalancer.connections.allowTo(props.ecsAsgSecurityGroup, ec2.Port.allTcp());
+      // Allow communication from the ECS service's ELB to the ECS ASG, if it exists.
+      if(props.ecsAsgSecurityGroup)
+        loadBalancedEcsService.loadBalancer.connections.allowTo(props.ecsAsgSecurityGroup, ec2.Port.allTcp());
     }
     else {
       console.log('DEPLOY_APP not set, skipping Amazon ECS service deployment.');

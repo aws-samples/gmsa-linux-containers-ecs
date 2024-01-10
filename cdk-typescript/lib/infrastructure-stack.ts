@@ -18,6 +18,7 @@ export interface InfrastructureStackProps extends StackProps {
   solutionId: string
   ecsInstanceKeyPairName: string,
   domainJoinEcsInstances: boolean,
+  useFargate: boolean
 }
 
 export interface AdInformation {
@@ -40,7 +41,7 @@ export class InfrastructureStack extends Stack {
   public activeDirectoryAdminPasswordSecret: secretsmanager.Secret;
 
   // Referece to the SSM document used to join into this AD domain
-  public domiainJoinSsmDocument: ssm.CfnDocument;
+  public domainJoinSsmDocument: ssm.CfnDocument;
 
   // Reference to the SSM parameter containing the gMSA CredSpec
   public credSpecParameter: ssm.StringParameter;
@@ -49,7 +50,7 @@ export class InfrastructureStack extends Stack {
   public domainlessIdentitySecret: secretsmanager.Secret;
 
   // Reference to the Security Group used by the Amazon ECS ASG
-  public ecsAsgSecurityGroup: ec2.ISecurityGroup;
+  public ecsAsgSecurityGroup: ec2.ISecurityGroup | undefined;
 
   // Tag used to automatically join EC2 instances to the AD domain.
   public adDomainJoinTagKey = 'ad-domain-join';
@@ -92,7 +93,6 @@ export class InfrastructureStack extends Stack {
       trafficType: ec2.FlowLogTrafficType.REJECT
     });
 
-
     // ------------------------------------------------------------------------------------------------------------------
     // Create the AWS Managed Active Directory
     // NOTE: Typically, the Active Directory will be deployed into another VPC or account. In that case, remove this code 
@@ -130,8 +130,10 @@ export class InfrastructureStack extends Stack {
       tier: ssm.ParameterTier.STANDARD
     });
 
+    // ------------------------------------------------------------------------------------------------------------------
     // Create a DHCP Options Set so the VPC uses the Active Directory DNS servers
     const activeDirectoryDhcpOptionsSet = new ec2.CfnDHCPOptions(this, 'active-directory-dhcp-ops', {
+      domainName: adInfo.domainName,
       domainNameServers: activeDirectory.attrDnsIpAddresses
     });
     new ec2.CfnVPCDHCPOptionsAssociation(this, 'directory-dhcp-ops-association', {
@@ -147,7 +149,8 @@ export class InfrastructureStack extends Stack {
       containerInsights: true
     });
 
-    // Create a secret to hold the AD username and password used by credentials fetcher to authenticate to the AD in domainless mode
+    // ------------------------------------------------------------------------------------------------------------------
+    // Create a secret to hold the AD username and password used by credentials fetcher to authenticate to the AD in domainless/fargate mode
     let domainlessUserIdentitySecret: cdk.aws_secretsmanager.Secret | null = null;
     domainlessUserIdentitySecret = new secretsmanager.Secret(this, 'cred-fetcher-identity-secret',
       {
@@ -162,51 +165,6 @@ export class InfrastructureStack extends Stack {
         }
       }
     );
-
-    // Define the User Data for the ASG
-    const ecsUserData = ec2.UserData.forLinux();
-    ecsUserData.addCommands(
-      'echo "ECS_GMSA_SUPPORTED=true" >> /etc/ecs/ecs.config',
-
-      'echo "sleeping for 80 secs to avoid RPM lock error..."',
-      'sleep 80s',
-      'dnf install dotnet realmd oddjob oddjob-mkhomedir sssd adcli krb5-workstation samba-common-tools credentials-fetcher -y',
-
-      'systemctl enable credentials-fetcher',
-      'systemctl start credentials-fetcher'
-    );
-
-    // Define the ASG
-    const ecsAutoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ecs-cluster-asg', {
-      vpc,
-      instanceType: new ec2.InstanceType('t3.small'),
-      machineImage: ec2.MachineImage.fromSsmParameter('/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id'),
-      userData: ecsUserData,
-      minCapacity: 1,
-      maxCapacity: 2,
-      keyName: props.ecsInstanceKeyPairName,
-      cooldown: cdk.Duration.minutes(1),
-      healthCheck: autoscaling.HealthCheck.ec2({
-        grace: cdk.Duration.minutes(10)
-      })
-    });
-
-    // Add policy for instances to be managed via SSM
-    ecsAutoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
-
-    // TODO: Remove after validating is not needed
-    // Grat access for the credentials fecther secret to the ECS ASG
-    // domainlessUserIdentitySecret?.grantRead(ecsAutoScalingGroup.role);
-
-    // Associate the ASG to the ECS cluster
-    const ecsCapacityProvider = new ecs.AsgCapacityProvider(this, 'ecs-cluster-asg-capacity-provider', {
-      autoScalingGroup: ecsAutoScalingGroup,
-      enableManagedTerminationProtection: false // This allows CloudFormation to clean all resources succesfully on deletion
-    });
-    ecsCluster.addAsgCapacityProvider(ecsCapacityProvider);
-
-    // Output the Name of the Amazon ECS ASG
-    new cdk.CfnOutput(this, 'ECSAutoScalingGroupName', { value: ecsAutoScalingGroup.autoScalingGroupName });
 
     // ------------------------------------------------------------------------------------------------------------------
     // Create objects to join EC2 instances to the Managed AD domain
@@ -272,13 +230,8 @@ export class InfrastructureStack extends Stack {
         ]
       }
     });
-    activeDirectoryAdminPasswordSecret.grantRead(ecsAutoScalingGroup.role);
 
-    // ------------------------------------------------------------------------------------------------------------------
-    // Configure the ECS cluster instances to join the Managed AD domain
-
-    // Create SSM association to run SSM document for all tagged instances
-    
+    // Create SSM association to run SSM document for any tagged instances
     const ecsAssociation = new ssm.CfnAssociation(this, 'ecs-cluster-asg-domain-join-ssm-association', {
       associationName: `${props.solutionId}-AD-Domian-Join`,
       name: domainJoinSsmDocument.ref,
@@ -288,40 +241,89 @@ export class InfrastructureStack extends Stack {
       }]
     });
 
-    //    This will happen only if the appropiate environment variable is set
-    if (props.domainJoinEcsInstances) {
+    // Resources needed for EC2 domain-joined and domainless modes only
+    let ecsAutoScalingGroup = undefined;
+    if (!props.useFargate) {
 
-      // TODO: Remove when seamless domain join is avaliable for AL2023
-      const ecsAssociationAlt = new ssm.CfnAssociation(this, 'ecs-cluster-asg-domain-join-ssm-association-alt', {
-        associationName: `${props.solutionId}-AD-Domian-Join-Alt`,
-        name: domainJoinSsmDocumentAtl.ref,
-        targets: [{
-          key: `tag:${this.adDomainJoinTagKey}`,
-          values: [props.solutionId],
-        }]
+      // Define the User Data for the ASG
+      const ecsUserData = ec2.UserData.forLinux();
+      ecsUserData.addCommands(
+        'echo "ECS_GMSA_SUPPORTED=true" >> /etc/ecs/ecs.config',
+
+        'echo "sleeping for 80 secs to avoid RPM lock error..."',
+        'sleep 80s',
+        'dnf install dotnet realmd oddjob oddjob-mkhomedir sssd adcli krb5-workstation samba-common-tools credentials-fetcher -y',
+
+        'systemctl enable credentials-fetcher',
+        'systemctl start credentials-fetcher'
+      );
+
+      // Define the ASG
+      ecsAutoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ecs-cluster-asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('t3.small'),
+        machineImage: ec2.MachineImage.fromSsmParameter('/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id'),
+        userData: ecsUserData,
+        minCapacity: 1,
+        maxCapacity: 2,
+        keyName: props.ecsInstanceKeyPairName,
+        cooldown: cdk.Duration.minutes(1),
+        healthCheck: autoscaling.HealthCheck.ec2({
+          grace: cdk.Duration.minutes(10)
+        })
       });
 
-      // Applies the tag to the ECS instances
-      cdk.Tags.of(ecsAutoScalingGroup).add(this.adDomainJoinTagKey, props.solutionId);
+      // Add policy for instances to be managed via SSM
+      ecsAutoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
 
-      // Grants read access for the seamless domain join secret to the ECS ASG
-      activeDirectorySeamlessJoinSecret.grantRead(ecsAutoScalingGroup.role);
+      // Associate the ASG to the ECS cluster
+      const ecsCapacityProvider = new ecs.AsgCapacityProvider(this, 'ecs-cluster-asg-capacity-provider', {
+        autoScalingGroup: ecsAutoScalingGroup,
+        enableManagedTerminationProtection: false // This allows CloudFormation to clean all resources succesfully on deletion
+      });
+      ecsCluster.addAsgCapacityProvider(ecsCapacityProvider);
 
-      // Add policies to the ASG to be able to join the Managed AD domian
-      ecsAutoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMDirectoryServiceAccess'));
-      ecsAutoScalingGroup.role.attachInlinePolicy(
-        new iam.Policy(this, 'domain-join-ssm-document-association', {
-          statements: [
-            new iam.PolicyStatement({
-              actions: [
-                'ssm:CreateAssociation',
-                'ssm:UpdateAssociation'
-              ],
-              resources: ['*'], // This is required in order to join any EC2 instance to the Managed AD domain
-            }),
-          ],
-        })
-      );
+      // Grants access to the admin password secret to the ASG so that it can be domain-joined
+      activeDirectoryAdminPasswordSecret.grantRead(ecsAutoScalingGroup.role);
+
+      // Output the Name of the Amazon ECS ASG
+      new cdk.CfnOutput(this, 'ECSAutoScalingGroupName', { value: ecsAutoScalingGroup.autoScalingGroupName });
+
+      // This will happen only if the appropriate environment variable is set
+      if (props.domainJoinEcsInstances) {
+
+        // TODO: Remove when seamless domain join is avaliable for AL2023
+        const ecsAssociationAlt = new ssm.CfnAssociation(this, 'ecs-cluster-asg-domain-join-ssm-association-alt', {
+          associationName: `${props.solutionId}-AD-Domian-Join-Alt`,
+          name: domainJoinSsmDocumentAtl.ref,
+          targets: [{
+            key: `tag:${this.adDomainJoinTagKey}`,
+            values: [props.solutionId],
+          }]
+        });
+
+        // Applies the tag to the ECS instances
+        cdk.Tags.of(ecsAutoScalingGroup).add(this.adDomainJoinTagKey, props.solutionId);
+
+        // Grants read access for the seamless domain join secret to the ECS ASG
+        activeDirectorySeamlessJoinSecret.grantRead(ecsAutoScalingGroup.role);
+
+        // Add policies to the ASG to be able to join the Managed AD domian
+        ecsAutoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMDirectoryServiceAccess'));
+        ecsAutoScalingGroup.role.attachInlinePolicy(
+          new iam.Policy(this, 'domain-join-ssm-document-association', {
+            statements: [
+              new iam.PolicyStatement({
+                actions: [
+                  'ssm:CreateAssociation',
+                  'ssm:UpdateAssociation'
+                ],
+                resources: ['*'], // This is required in order to join any EC2 instance to the Managed AD domain
+              }),
+            ],
+          })
+        );
+      }
     }
 
     // ------------------------------------------------------------------------------------------------------------------
@@ -341,8 +343,8 @@ export class InfrastructureStack extends Stack {
     this.vpc = vpc;
     this.activeDirectory = activeDirectory;
     this.activeDirectoryAdminPasswordSecret = activeDirectoryAdminPasswordSecret;
-    this.domiainJoinSsmDocument = domainJoinSsmDocument;
-    this.ecsAsgSecurityGroup = ecsAutoScalingGroup.connections.securityGroups[0];
+    this.domainJoinSsmDocument = domainJoinSsmDocument;
+    this.ecsAsgSecurityGroup = ecsAutoScalingGroup?.connections.securityGroups[0];
     this.credSpecParameter = credSpecParameter;
     this.domainlessIdentitySecret = domainlessUserIdentitySecret;
   }
