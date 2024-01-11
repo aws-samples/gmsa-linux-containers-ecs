@@ -44,7 +44,7 @@ const dbStack = new DatabaseStack(app, `${config.props.SOLUTION_ID}-database`, {
   ecsAsgSecurityGroup: infraStack.ecsAsgSecurityGroup
 });
 
-//Create Bastio  Host / AD Admin Instance
+//Create Bastion Host / AD Admin Instance
 const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bastion`, {
   env: envConfig,
   solutionId: config.props.SOLUTION_ID,
@@ -54,7 +54,7 @@ const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bast
   adManagementInstanceAccessIp: config.props.MY_SG_INGRESS_IP,
   activeDirectory: infraStack.activeDirectory,
   activeDirectoryAdminPasswordSecret: infraStack.activeDirectoryAdminPasswordSecret,
-  domiainJoinSsmDocument: infraStack.domainJoinSsmDocument,
+  domainJoinSsmDocument: infraStack.domainJoinSsmDocument,
   domainJoinTag: infraStack.adDomainJoinTagKey,
   sqlServerRdsInstance: dbStack.sqlServerInstance,
   credSpecParameter: infraStack.credSpecParameter,
@@ -69,6 +69,7 @@ const appStack = new ApplicationStack(app, `${config.props.SOLUTION_ID}-applicat
   env: envConfig,
   solutionId: config.props.SOLUTION_ID,
   vpc: infraStack.vpc,
+  useFargate: config.props.FARGATE === '1',
   ecsAsgSecurityGroup: infraStack.ecsAsgSecurityGroup,
   areEcsInstancesDomainJoined: config.props.DOMAIN_JOIN_ECS === '1',
   domainName: infraStack.activeDirectory.name,

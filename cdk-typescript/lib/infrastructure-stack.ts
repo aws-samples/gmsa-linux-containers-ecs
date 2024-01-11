@@ -40,13 +40,13 @@ export class InfrastructureStack extends Stack {
   // Reference to the AWS Secret containing the Managed AD admin password
   public activeDirectoryAdminPasswordSecret: secretsmanager.Secret;
 
-  // Referece to the SSM document used to join into this AD domain
+  // Reference to the SSM document used to join into this AD domain
   public domainJoinSsmDocument: ssm.CfnDocument;
 
   // Reference to the SSM parameter containing the gMSA CredSpec
   public credSpecParameter: ssm.StringParameter;
 
-  // Reference to the AWS Secret containing the AD user password that can retreive gMSA passwords in domainless mode
+  // Reference to the AWS Secret containing the AD user password that can retrieve gMSA passwords in domainless mode
   public domainlessIdentitySecret: secretsmanager.Secret;
 
   // Reference to the Security Group used by the Amazon ECS ASG
@@ -201,7 +201,7 @@ export class InfrastructureStack extends Stack {
     );
 
     // Alternative method used to join Linux instances while AL2023 releases seamless domain join
-    //   TODO: Remove when seamless domain join is avaliable for AL2023
+    //   TODO: Remove when seamless domain join is available for AL2023
     const domainJoinSsmDocumentAtl = new ssm.CfnDocument(this, 'domain-join-ssm-document-alt', {
       documentType: "Command",
       content: {
@@ -279,7 +279,7 @@ export class InfrastructureStack extends Stack {
       // Associate the ASG to the ECS cluster
       const ecsCapacityProvider = new ecs.AsgCapacityProvider(this, 'ecs-cluster-asg-capacity-provider', {
         autoScalingGroup: ecsAutoScalingGroup,
-        enableManagedTerminationProtection: false // This allows CloudFormation to clean all resources succesfully on deletion
+        enableManagedTerminationProtection: false // This allows CloudFormation to clean all resources successfully on deletion
       });
       ecsCluster.addAsgCapacityProvider(ecsCapacityProvider);
 
@@ -292,7 +292,7 @@ export class InfrastructureStack extends Stack {
       // This will happen only if the appropriate environment variable is set
       if (props.domainJoinEcsInstances) {
 
-        // TODO: Remove when seamless domain join is avaliable for AL2023
+        // TODO: Remove when seamless domain join is available for AL2023
         const ecsAssociationAlt = new ssm.CfnAssociation(this, 'ecs-cluster-asg-domain-join-ssm-association-alt', {
           associationName: `${props.solutionId}-AD-Domian-Join-Alt`,
           name: domainJoinSsmDocumentAtl.ref,
@@ -308,7 +308,7 @@ export class InfrastructureStack extends Stack {
         // Grants read access for the seamless domain join secret to the ECS ASG
         activeDirectorySeamlessJoinSecret.grantRead(ecsAutoScalingGroup.role);
 
-        // Add policies to the ASG to be able to join the Managed AD domian
+        // Add policies to the ASG to be able to join the Managed AD domain
         ecsAutoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMDirectoryServiceAccess'));
         ecsAutoScalingGroup.role.attachInlinePolicy(
           new iam.Policy(this, 'domain-join-ssm-document-association', {
@@ -328,7 +328,7 @@ export class InfrastructureStack extends Stack {
 
     // ------------------------------------------------------------------------------------------------------------------
     // Create an SSM parameter to hold the CredSpec file
-    //    This secret will be used by the credentials fetcher inside ECS to retreive gMSA passwords
+    //    This secret will be used by the credentials fetcher inside ECS to retrieve gMSA passwords
     const credSpecParameter = new ssm.StringParameter(this, 'credspec-ssm-parameter', {
       allowedPattern: '.*',
       description: 'gMSA CredSpec',

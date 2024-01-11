@@ -4,7 +4,6 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
-import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -18,6 +17,7 @@ import * as config from '../bin/config'
 export interface ApplicationStackProps extends StackProps {
   solutionId: string,
   vpc: ec2.Vpc,
+  useFargate: boolean,
   ecsAsgSecurityGroup: ec2.ISecurityGroup | undefined,
   areEcsInstancesDomainJoined: boolean,
   domainName: string,
@@ -53,7 +53,7 @@ export class ApplicationStack extends Stack {
     });
 
     // Create a ECS task. Include an application scratch volume.
-    const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'web-site-task', {
+    const taskDefinitionProperties = {
       family: 'amazon-ecs-gmsa-linux-web-site-task',
       executionRole: taskExecutionRole,
       volumes: [
@@ -62,10 +62,13 @@ export class ApplicationStack extends Stack {
           host: {}
         }
       ],
-    });
+    };
+    const taskDefinition = props.useFargate ?
+      new ecs.FargateTaskDefinition(this, 'web-site-task-def') :
+      new ecs.Ec2TaskDefinition(this, 'web-site-task-def',);
 
     // Add the web application container to the task definition.
-    const webSiteContainer = ec2TaskDefinition.addContainer('web-site-container', {
+    const webSiteContainer = taskDefinition.addContainer('web-site-container', {
       image: ecs.ContainerImage.fromEcrRepository(webSiteRepository, 'latest'),
       memoryLimitMiB: 512,
       healthCheck: {
@@ -93,21 +96,25 @@ export class ApplicationStack extends Stack {
     if (config.props.DEPLOY_APP === '1') {
 
       // Create a load-balanced service.    
-      const loadBalancedEcsService = new ecs_patterns.ApplicationLoadBalancedEc2Service(this, 'web-site-ec2-service', {
+
+      const serviceProperties = {
         cluster: cluster,
-        taskDefinition: ec2TaskDefinition,
+        taskDefinition: taskDefinition,
         desiredCount: 1,
         publicLoadBalancer: true,
         openListener: true,
         enableExecuteCommand: true
-      });      
+      };
+      const loadBalancedEcsService = props.useFargate ?
+        new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'web-site-ec2-service', serviceProperties) :
+        new ecs_patterns.ApplicationLoadBalancedEc2Service(this, 'web-site-ec2-service', serviceProperties);
       loadBalancedEcsService.targetGroup.configureHealthCheck({ path: '/Privacy' });
 
       // Updates the task definition revison based on the global environment variable.
-      (loadBalancedEcsService.service.node.tryFindChild('Service') as ecs.CfnService)?.addPropertyOverride('TaskDefinition', `arn:aws:ecs:${this.region}:${this.account}:task-definition/${ec2TaskDefinition.family}:${props.taskDefinitionRevision}`);
+      (loadBalancedEcsService.service.node.tryFindChild('Service') as ecs.CfnService)?.addPropertyOverride('TaskDefinition', `arn:aws:ecs:${this.region}:${this.account}:task-definition/${taskDefinition.family}:${props.taskDefinitionRevision}`);
 
       // Allow communication from the ECS service's ELB to the ECS ASG, if it exists.
-      if(props.ecsAsgSecurityGroup)
+      if (props.ecsAsgSecurityGroup)
         loadBalancedEcsService.loadBalancer.connections.allowTo(props.ecsAsgSecurityGroup, ec2.Port.allTcp());
     }
     else {

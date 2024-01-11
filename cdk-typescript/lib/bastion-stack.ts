@@ -25,7 +25,7 @@ export interface BastionHostStackProps extends StackProps {
   adInfo: AdInformation,
   activeDirectory: directory.CfnMicrosoftAD,
   activeDirectoryAdminPasswordSecret: secretsmanager.Secret
-  domiainJoinSsmDocument: ssm.CfnDocument,
+  domainJoinSsmDocument: ssm.CfnDocument,
   domainJoinTag: string,
   sqlServerRdsInstance: rds.DatabaseInstance,
   credSpecParameter: ssm.StringParameter,
@@ -146,7 +146,7 @@ export class BastionHostStack extends Stack {
             actions: ['ssm:SendCommand'],
             resources: [
               `${this.resourceArn(this, 'ec2')}:instance/${directoryManagementInstance.instance.ref}`,
-              `${this.resourceArn(this, 'ssm')}:document/${props.domiainJoinSsmDocument.ref}`
+              `${this.resourceArn(this, 'ssm')}:document/${props.domainJoinSsmDocument.ref}`
             ],
           }),
         ],
@@ -172,7 +172,7 @@ export class BastionHostStack extends Stack {
     );
 
     // Allow the AD management instance to inspect the EC2 instances part of the ECS ASG.
-    //    These permisions are a sample to help automate the addition of Amazon EC2 Linux instances to an AD Group.
+    //    These permissions are a sample to help automate the addition of Amazon EC2 Linux instances to an AD Group.
     directoryManagementInstance.role.attachInlinePolicy(
       new iam.Policy(this, 'ecs-asg-inspect', {
         statements: [
@@ -187,7 +187,7 @@ export class BastionHostStack extends Stack {
       })
     );
 
-    // Add appropiate tags to automatically join the EC2 instance to the AD domain.
+    // Add appropriate tags to automatically join the EC2 instance to the AD domain.
     cdk.Tags.of(directoryManagementInstance).add(props.domainJoinTag, props.solutionId);
   }
 
