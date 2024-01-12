@@ -55,16 +55,10 @@ export class ApplicationStack extends Stack {
     const taskDefinitionProperties = {
       family: 'amazon-ecs-gmsa-linux-web-site-task',
       executionRole: taskExecutionRole,
-      volumes: [
-        {
-          name: 'application_scratch',
-          host: {}
-        }
-      ],
     };
     const taskDefinition = props.useFargate ?
-      new ecs.FargateTaskDefinition(this, 'web-site-task-def') :
-      new ecs.Ec2TaskDefinition(this, 'web-site-task-def',);
+      new ecs.FargateTaskDefinition(this, 'web-site-task-def', taskDefinitionProperties) :
+      new ecs.Ec2TaskDefinition(this, 'web-site-task-def', taskDefinitionProperties);
 
     // Add the web application container to the task definition.
     const webSiteContainer = taskDefinition.addContainer('web-site-container', {
