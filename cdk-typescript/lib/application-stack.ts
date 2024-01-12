@@ -4,8 +4,10 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
+import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecs_patterns from 'aws-cdk-lib/aws-ecs-patterns';
@@ -21,6 +23,8 @@ export interface ApplicationStackProps extends StackProps {
   domainName: string,
   dbInstanceName: string,
   credSpecParameter: ssm.StringParameter,
+  credSpecBucket: s3.Bucket,
+  readCredSpecFromS3: boolean,
   domainlessIdentitySecret: secretsmanager.Secret,
   deployService: boolean,
   taskDefinitionRevision: string
@@ -37,18 +41,21 @@ export class ApplicationStack extends Stack {
       securityGroups: []
     });
 
-    // Create an IAM role for the task execution and  allows read access to the CredSpec SSM Parameter.
+    // Create an IAM role for the task execution and  allows read access to the CredSpec SSM Parameter and S3 bucket.
     const taskExecutionRole = new iam.Role(this, 'web-site-task-execution-role', {
       roleName: `${props.solutionId}-web-site-task-execution-role`,
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
     });
     taskExecutionRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy'));
     props.credSpecParameter.grantRead(taskExecutionRole);
+    props.credSpecBucket.grantRead(taskExecutionRole);
+    props.credSpecBucket.grantRead(taskExecutionRole);
     props.domainlessIdentitySecret.grantRead(taskExecutionRole);
 
     // Create the container repository for the application
     const webSiteRepository = new ecr.Repository(this, 'web-site-repository', {
       repositoryName: `${props.solutionId}/web-site`,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // Create a ECS task. Include an application scratch volume.
@@ -61,6 +68,7 @@ export class ApplicationStack extends Stack {
       new ecs.Ec2TaskDefinition(this, 'web-site-task-def', taskDefinitionProperties);
 
     // Add the web application container to the task definition.
+    const credentialSpecString = `${props.areEcsInstancesDomainJoined ? 'credentialspec' : 'credentialspecdomainless'}:${props.readCredSpecFromS3 ? `${props.credSpecBucket.bucketArn}/${props.solutionId}-CredSpec` : props.credSpecParameter.parameterArn}`;
     const webSiteContainer = taskDefinition.addContainer('web-site-container', {
       image: ecs.ContainerImage.fromEcrRepository(webSiteRepository, 'latest'),
       memoryLimitMiB: 512,
@@ -71,14 +79,15 @@ export class ApplicationStack extends Stack {
         streamPrefix: 'web'
       }),
       // credentialSpecs: [
-      //   `${props.areEcsInstancesDomianJoined ? 'credentialspec' : 'credentialspecdomainless'}:${props.credSpecParameter.parameterArn}`
+      //   credentialSpecString
       // ],
       environment: {
         "ASPNETCORE_ENVIRONMENT": "Development",
         // To use Kerberos authentication, you should use a domain FQDM to refere to the SQL Server,
         //   if you use the endpoint provided for by RDS the NTLM auth will be used instead, and will fail.
         "ConnectionStrings__Chinook": `Server=${props.dbInstanceName}.${props.domainName};Database=Chinook;Integrated Security=true;TrustServerCertificate=true;`,
-        "CREDENTIAL_SPEC": `${props.areEcsInstancesDomainJoined ? 'credentialspec' : 'credentialspecdomainless'}:${props.credSpecParameter.parameterArn}`
+        // Workaround for lack of native support of credentialSpecs property.
+        "CREDENTIAL_SPEC": credentialSpecString
       }
     });
     webSiteContainer.addPortMappings({ containerPort: 80 });

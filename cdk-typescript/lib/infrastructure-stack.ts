@@ -8,6 +8,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as directory from 'aws-cdk-lib/aws-directoryservice';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
@@ -44,6 +45,9 @@ export class InfrastructureStack extends Stack {
 
   // Reference to the SSM parameter containing the gMSA CredSpec
   public credSpecParameter: ssm.StringParameter;
+
+  // Reference to the S3 bucket containing the gMSA CredSpec
+  public credSpecBucket: s3.Bucket;
 
   // Reference to the AWS Secret containing the AD user password that can retrieve gMSA passwords in domainless mode
   public domainlessIdentitySecret: secretsmanager.Secret;
@@ -257,6 +261,9 @@ export class InfrastructureStack extends Stack {
         'systemctl start credentials-fetcher'
       );
 
+      // Retrieve provided KeyPair
+      const keyPair = ec2.KeyPair.fromKeyPairName(this, 'ec2-key-pair', props.ecsInstanceKeyPairName);
+
       // Define the ASG
       ecsAutoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ecs-cluster-asg', {
         vpc,
@@ -265,7 +272,7 @@ export class InfrastructureStack extends Stack {
         userData: ecsUserData,
         minCapacity: 1,
         maxCapacity: 2,
-        keyName: props.ecsInstanceKeyPairName,
+        keyName: keyPair.keyPairName,
         cooldown: cdk.Duration.minutes(1),
         healthCheck: autoscaling.HealthCheck.ec2({
           grace: cdk.Duration.minutes(10)
@@ -326,14 +333,19 @@ export class InfrastructureStack extends Stack {
     }
 
     // ------------------------------------------------------------------------------------------------------------------
-    // Create an SSM parameter to hold the CredSpec file
-    //    This secret will be used by the credentials fetcher inside ECS to retrieve gMSA passwords
+    // Create CredSpec storage as S3 and SSM Parameter Store
     const credSpecParameter = new ssm.StringParameter(this, 'credspec-ssm-parameter', {
       allowedPattern: '.*',
       description: 'gMSA CredSpec',
       parameterName: `/${props.solutionId}/credspec`,
       stringValue: 'RUN Generate-CredSpec.ps1 to populate this parameter',
       tier: ssm.ParameterTier.STANDARD
+    });
+    const credSpecBucket = new s3.Bucket(this, 'credspec-s3-bucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      enforceSSL: true,
     });
 
     // ------------------------------------------------------------------------------------------------------------------
@@ -345,6 +357,7 @@ export class InfrastructureStack extends Stack {
     this.domainJoinSsmDocument = domainJoinSsmDocument;
     this.ecsAsgSecurityGroup = ecsAutoScalingGroup?.connections.securityGroups[0];
     this.credSpecParameter = credSpecParameter;
+    this.credSpecBucket = credSpecBucket;
     this.domainlessIdentitySecret = domainlessUserIdentitySecret;
   }
 }

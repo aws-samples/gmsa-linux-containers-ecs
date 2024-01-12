@@ -13,6 +13,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as directory from 'aws-cdk-lib/aws-directoryservice';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -20,7 +21,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 export interface BastionHostStackProps extends StackProps {
   solutionId: string,
   vpc: ec2.Vpc,
-  adManagementInstanceKeyPairName: string,
+  ecsInstanceKeyPairName: string,
   adManagementInstanceAccessIp: string,
   adInfo: AdInformation,
   activeDirectory: directory.CfnMicrosoftAD,
@@ -29,6 +30,7 @@ export interface BastionHostStackProps extends StackProps {
   domainJoinTag: string,
   sqlServerRdsInstance: rds.DatabaseInstance,
   credSpecParameter: ssm.StringParameter,
+  credSpecBucket: s3.Bucket,
   domainlessIdentitySecret: secretsmanager.Secret
 }
 
@@ -58,7 +60,8 @@ export class BastionHostStack extends Stack {
     generateCredspecContent = replaceAdVariables(generateCredspecContent);
     generateCredspecContent = generateCredspecContent
       .replace('$SolutionId = ""', `$SolutionId = "${props.solutionId}"`)
-      .replace('$DomainlessArn = ""', `$DomainlessArn = "${props.domainlessIdentitySecret.secretArn}"`);
+      .replace('$DomainlessArn = ""', `$DomainlessArn = "${props.domainlessIdentitySecret.secretArn}"`)
+      .replace('$CredSpecS3BucketName = ""', `$CredSpecS3BucketName = "${props.credSpecBucket.bucketName}"`);
     addEcsInstancesToAdContent = replaceAdVariables(addEcsInstancesToAdContent);
     loginSqlContent = loginSqlContent
       .replace(/ad\\admin/gi, `${props.adInfo.domainName.split('.')[0]}\\${props.adInfo.adminUsername}`)
@@ -117,12 +120,13 @@ export class BastionHostStack extends Stack {
     const windowsServerImage = ec2.MachineImage.latestWindows(ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE, {
       userData: userData
     });
+    const keyPair = ec2.KeyPair.fromKeyPairName(this, 'ec2-key-pair', props.ecsInstanceKeyPairName);
     const directoryManagementInstance = new ec2.Instance(this, 'active-directory-management-instance', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
       machineImage: windowsServerImage,
       vpc: props.vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
-      keyName: props.adManagementInstanceKeyPairName
+      keyPair: keyPair
     });
 
     // Add the IP passed.
@@ -153,23 +157,10 @@ export class BastionHostStack extends Stack {
       })
     );
 
-    // Allow the AD management instance to update the CredSpec SSM Parameter.
-    directoryManagementInstance.role.attachInlinePolicy(
-      new iam.Policy(this, 'credspec-parameter-update', {
-        statements: [
-          new iam.PolicyStatement({
-            actions: [
-              'ssm:PutParameter',
-              'ssm:GetParametersByPath',
-              'ssm:GetParameters',
-              'ssm:GetParameter',
-              'ssm:PutParameter'
-            ],
-            resources: [props.credSpecParameter.parameterArn],
-          }),
-        ],
-      })
-    );
+    // Allow the AD management instance to update the CredSpec SSM Parameter and S3 bucket.
+    props.credSpecParameter.grantRead(directoryManagementInstance.role);   
+    props.credSpecParameter.grantWrite(directoryManagementInstance.role);   
+    props.credSpecBucket.grantReadWrite(directoryManagementInstance.role);    
 
     // Allow the AD management instance to inspect the EC2 instances part of the ECS ASG.
     //    These permissions are a sample to help automate the addition of Amazon EC2 Linux instances to an AD Group.

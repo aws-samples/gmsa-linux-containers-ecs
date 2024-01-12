@@ -14,6 +14,7 @@ export const props = {
     MY_SG_INGRESS_IP: process.env.MY_SG_INGRESS_IP,    
     DOMAIN_JOIN_ECS: process.env.DOMAIN_JOIN_ECS || '0',
     FARGATE: process.env.FARGATE || '0',
+    CREDSPEC_FROM_S3: process.env.CREDSPEC_FROM_S3 || '0',
     DEPLOY_APP: process.env.DEPLOY_APP || '0',
     APP_TD_REVISION: process.env.APP_TD_REVISION || '2',
 }

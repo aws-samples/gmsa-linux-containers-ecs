@@ -26,6 +26,14 @@ if (!config.props.MY_SG_INGRESS_IP) {
   throw 'The IP to access the AD Management instance is required to create the shared infrastructure.'
 }
 
+if(config.props.FARGATE === '1' && config.props.DOMAIN_JOIN_ECS === '1'){
+  throw `gMSA on Fargate doesn't support domain-joined mode. Please set DOMAIN_JOIN_ECS=0 to continue deploying with Fargate.`
+}
+
+if(config.props.FARGATE === '1' && config.props.CREDSPEC_FROM_S3 === '0'){
+  throw `gMSA on Fargate doesn't support reading the CRedSpec from from SSM Parameter Store. Please set CREDSPEC_FROM_S3=1 to continue deploying with Fargate.`
+}
+
 // Create shared infrastructure
 const infraStack = new InfrastructureStack(app, `${config.props.SOLUTION_ID}-infrastructure`, {
   env: envConfig,
@@ -50,7 +58,7 @@ const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bast
   solutionId: config.props.SOLUTION_ID,
   vpc: infraStack.vpc,
   adInfo: infraStack.adInfo,
-  adManagementInstanceKeyPairName: config.props.EC2_INSTANCE_KEYPAIR_NAME,
+  ecsInstanceKeyPairName: config.props.EC2_INSTANCE_KEYPAIR_NAME,
   adManagementInstanceAccessIp: config.props.MY_SG_INGRESS_IP,
   activeDirectory: infraStack.activeDirectory,
   activeDirectoryAdminPasswordSecret: infraStack.activeDirectoryAdminPasswordSecret,
@@ -58,6 +66,7 @@ const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bast
   domainJoinTag: infraStack.adDomainJoinTagKey,
   sqlServerRdsInstance: dbStack.sqlServerInstance,
   credSpecParameter: infraStack.credSpecParameter,
+  credSpecBucket: infraStack.credSpecBucket,
   domainlessIdentitySecret: infraStack.domainlessIdentitySecret
 });
 
@@ -75,6 +84,8 @@ const appStack = new ApplicationStack(app, `${config.props.SOLUTION_ID}-applicat
   domainName: infraStack.activeDirectory.name,
   dbInstanceName: dbStack.sqlServerInstance.instanceIdentifier,
   credSpecParameter: infraStack.credSpecParameter,
+  credSpecBucket: infraStack.credSpecBucket,
+  readCredSpecFromS3: config.props.CREDSPEC_FROM_S3 === '1',
   domainlessIdentitySecret: infraStack.domainlessIdentitySecret,
   deployService: config.props.DEPLOY_APP === '1',
   taskDefinitionRevision: config.props.APP_TD_REVISION
