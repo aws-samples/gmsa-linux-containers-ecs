@@ -12,8 +12,6 @@ import * as ecs_patterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
-import * as config from '../bin/config'
-
 export interface ApplicationStackProps extends StackProps {
   solutionId: string,
   vpc: ec2.Vpc,
@@ -24,6 +22,7 @@ export interface ApplicationStackProps extends StackProps {
   dbInstanceName: string,
   credSpecParameter: ssm.StringParameter,
   domainlessIdentitySecret: secretsmanager.Secret,
+  deployService: boolean,
   taskDefinitionRevision: string
 }
 
@@ -77,26 +76,21 @@ export class ApplicationStack extends Stack {
       logging: ecs.LogDrivers.awsLogs({
         streamPrefix: 'web'
       }),
-      dockerSecurityOptions: [
-        `credentialspec:${props.credSpecParameter.parameterArn}`
-      ],
       // credentialSpecs: [
       //   `${props.areEcsInstancesDomianJoined ? 'credentialspec' : 'credentialspecdomainless'}:${props.credSpecParameter.parameterArn}`
       // ],
       environment: {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        // To use Kerberos authenication, you should use a domain FQDM to refere to the SQL Server,
+        // To use Kerberos authentication, you should use a domain FQDM to refere to the SQL Server,
         //   if you use the endpoint provided for by RDS the NTLM auth will be used instead, and will fail.
         "ConnectionStrings__Chinook": `Server=${props.dbInstanceName}.${props.domainName};Database=Chinook;Integrated Security=true;TrustServerCertificate=true;`,
+        "CREDENTIAL_SPEC": `${props.areEcsInstancesDomainJoined ? 'credentialspec' : 'credentialspecdomainless'}:${props.credSpecParameter.parameterArn}`
       }
     });
     webSiteContainer.addPortMappings({ containerPort: 80 });
-    webSiteContainer.addMountPoints({ sourceVolume: 'application_scratch', containerPath: '/var/scratch', readOnly: true });
 
-    if (config.props.DEPLOY_APP === '1') {
-
-      // Create a load-balanced service.    
-
+    if (props.deployService) {
+      // Create a load-balanced ECS service.    
       const serviceProperties = {
         cluster: cluster,
         taskDefinition: taskDefinition,

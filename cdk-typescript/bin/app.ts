@@ -76,5 +76,6 @@ const appStack = new ApplicationStack(app, `${config.props.SOLUTION_ID}-applicat
   dbInstanceName: dbStack.sqlServerInstance.instanceIdentifier,
   credSpecParameter: infraStack.credSpecParameter,
   domainlessIdentitySecret: infraStack.domainlessIdentitySecret,
+  deployService: config.props.DEPLOY_APP === '1',
   taskDefinitionRevision: config.props.APP_TD_REVISION
 });

@@ -8,7 +8,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as directory from 'aws-cdk-lib/aws-directoryservice';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
