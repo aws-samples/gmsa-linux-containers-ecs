@@ -52,6 +52,16 @@ export class ApplicationStack extends Stack {
     props.credSpecBucket.grantRead(taskExecutionRole);
     props.domainlessIdentitySecret.grantRead(taskExecutionRole);
 
+    // Gives permission for ECS-Exec to run
+    taskExecutionRole.addToPolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['ssmmessages:CreateControlChannel', 'ssmmessages:CreateDataChannel', 'ssmmessages:OpenControlChannel', 'ssmmessages:OpenDataChannel'],
+        resources: ['*'],
+        sid: 'ECS-Exec'
+      }),
+    )
+
     // Create the container repository for the application
     const webSiteRepository = new ecr.Repository(this, 'web-site-repository', {
       repositoryName: `${props.solutionId}/web-site`,
