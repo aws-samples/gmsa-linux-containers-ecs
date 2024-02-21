@@ -17,7 +17,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 export interface InfrastructureStackProps extends StackProps {
   solutionId: string
   ecsInstanceKeyPairName: string,
-  domainJoinEcsInstances: boolean,
+  useDomainJoin: boolean,
   useFargate: boolean
 }
 
@@ -296,7 +296,7 @@ export class InfrastructureStack extends Stack {
       new cdk.CfnOutput(this, 'ECSAutoScalingGroupName', { value: ecsAutoScalingGroup.autoScalingGroupName });
 
       // This will happen only if the appropriate environment variable is set
-      if (props.domainJoinEcsInstances) {
+      if (props.useDomainJoin) {
 
         // TODO: Remove when seamless domain join is available for AL2023
         const ecsAssociationAlt = new ssm.CfnAssociation(this, 'ecs-cluster-asg-domain-join-ssm-association-alt', {

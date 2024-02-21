@@ -31,7 +31,7 @@ if(config.props.FARGATE === '1' && config.props.DOMAIN_JOIN_ECS === '1'){
 }
 
 if(config.props.FARGATE === '1' && config.props.CREDSPEC_FROM_S3 === '0'){
-  throw `gMSA on Fargate doesn't support reading the CRedSpec from from SSM Parameter Store. Please set CREDSPEC_FROM_S3=1 to continue deploying with Fargate.`
+  throw `gMSA on Fargate doesn't support reading the CredSpec from from SSM Parameter Store. Please set CREDSPEC_FROM_S3=1 to continue deploying with Fargate. Otherwise, set FARGATE=0`
 }
 
 // Create shared infrastructure
@@ -39,7 +39,7 @@ const infraStack = new InfrastructureStack(app, `${config.props.SOLUTION_ID}-inf
   env: envConfig,
   solutionId: config.props.SOLUTION_ID,
   ecsInstanceKeyPairName: config.props.EC2_INSTANCE_KEYPAIR_NAME,
-  domainJoinEcsInstances: config.props.DOMAIN_JOIN_ECS === '1',
+  useDomainJoin: config.props.DOMAIN_JOIN_ECS === '1',
   useFargate: config.props.FARGATE === '1',
 });
 
@@ -70,17 +70,13 @@ const bastionStack = new BastionHostStack(app, `${config.props.SOLUTION_ID}-bast
   domainlessIdentitySecret: infraStack.domainlessIdentitySecret
 });
 
-if(config.props.DEPLOY_APP === '1'){
-  console.warn(`Revision "${config.props.APP_TD_REVISION}" of the Amazon ECS task definition is been used in the Amazon ECS service. If you want a different revision, set the APP_TD_REVISION environment variable to a different value.`)
-}
-
 const appStack = new ApplicationStack(app, `${config.props.SOLUTION_ID}-application`, {
   env: envConfig,
   solutionId: config.props.SOLUTION_ID,
   vpc: infraStack.vpc,
+  useDomainJoin: config.props.DOMAIN_JOIN_ECS === '1',
   useFargate: config.props.FARGATE === '1',
   ecsAsgSecurityGroup: infraStack.ecsAsgSecurityGroup,
-  areEcsInstancesDomainJoined: config.props.DOMAIN_JOIN_ECS === '1',
   domainName: infraStack.activeDirectory.name,
   dbInstanceName: dbStack.sqlServerInstance.instanceIdentifier,
   credSpecParameter: infraStack.credSpecParameter,
@@ -88,5 +84,4 @@ const appStack = new ApplicationStack(app, `${config.props.SOLUTION_ID}-applicat
   readCredSpecFromS3: config.props.CREDSPEC_FROM_S3 === '1',
   domainlessIdentitySecret: infraStack.domainlessIdentitySecret,
   deployService: config.props.DEPLOY_APP === '1',
-  taskDefinitionRevision: config.props.APP_TD_REVISION
 });

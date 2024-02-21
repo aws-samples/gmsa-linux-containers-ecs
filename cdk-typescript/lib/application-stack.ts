@@ -17,9 +17,9 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 export interface ApplicationStackProps extends StackProps {
   solutionId: string,
   vpc: ec2.Vpc,
+  useDomainJoin: boolean,
   useFargate: boolean,
   ecsAsgSecurityGroup: ec2.ISecurityGroup | undefined,
-  areEcsInstancesDomainJoined: boolean,
   domainName: string,
   dbInstanceName: string,
   credSpecParameter: ssm.StringParameter,
@@ -27,7 +27,6 @@ export interface ApplicationStackProps extends StackProps {
   readCredSpecFromS3: boolean,
   domainlessIdentitySecret: secretsmanager.Secret,
   deployService: boolean,
-  taskDefinitionRevision: string
 }
 
 export class ApplicationStack extends Stack {
@@ -67,8 +66,22 @@ export class ApplicationStack extends Stack {
       new ecs.FargateTaskDefinition(this, 'web-site-task-def', taskDefinitionProperties) :
       new ecs.Ec2TaskDefinition(this, 'web-site-task-def', taskDefinitionProperties);
 
-    // Add the web application container to the task definition.
-    const credentialSpecString = `${props.areEcsInstancesDomainJoined ? 'credentialspec' : 'credentialspecdomainless'}:${props.readCredSpecFromS3 ? `${props.credSpecBucket.bucketArn}/${props.solutionId}-CredSpec` : props.credSpecParameter.parameterArn}`;
+    // Define the CredSpec type to use
+    let credentialSpec: ecs.CredentialSpec;
+    if (props.useDomainJoin) {
+      if (props.readCredSpecFromS3)
+        credentialSpec = ecs.DomainJoinedCredentialSpec.fromS3Bucket(props.credSpecBucket, `${props.solutionId}-CredSpec`);
+      else
+        credentialSpec = ecs.DomainJoinedCredentialSpec.fromSsmParameter(props.credSpecParameter);
+    }
+    else {
+      if (props.readCredSpecFromS3)
+        credentialSpec = ecs.DomainlessCredentialSpec.fromS3Bucket(props.credSpecBucket, `${props.solutionId}-CredSpec`);
+      else
+        credentialSpec = ecs.DomainlessCredentialSpec.fromSsmParameter(props.credSpecParameter);
+    }
+
+    // Add the web application container to the task definition.    
     const webSiteContainer = taskDefinition.addContainer('web-site-container', {
       image: ecs.ContainerImage.fromEcrRepository(webSiteRepository, 'latest'),
       memoryLimitMiB: 512,
@@ -78,16 +91,12 @@ export class ApplicationStack extends Stack {
       logging: ecs.LogDrivers.awsLogs({
         streamPrefix: 'web'
       }),
-      // credentialSpecs: [
-      //   credentialSpecString
-      // ],
+      credentialSpecs: [credentialSpec],
       environment: {
         "ASPNETCORE_ENVIRONMENT": "Development",
         // To use Kerberos authentication, you should use a domain FQDM to refere to the SQL Server,
         //   if you use the endpoint provided for by RDS the NTLM auth will be used instead, and will fail.
         "ConnectionStrings__Chinook": `Server=${props.dbInstanceName}.${props.domainName};Database=Chinook;Integrated Security=true;TrustServerCertificate=true;`,
-        // Workaround for lack of native support of credentialSpecs property.
-        "CREDENTIAL_SPEC": credentialSpecString
       }
     });
     webSiteContainer.addPortMappings({ containerPort: 80 });
@@ -117,9 +126,6 @@ export class ApplicationStack extends Stack {
         new ecs_patterns.ApplicationLoadBalancedEc2Service(this, 'web-site-ec2-service', serviceProperties);
       loadBalancedEcsService.targetGroup.configureHealthCheck({ path: '/Privacy' });
 
-      // Updates the task definition revison based on the global environment variable.
-      (loadBalancedEcsService.service.node.tryFindChild('Service') as ecs.CfnService)?.addPropertyOverride('TaskDefinition', `arn:aws:ecs:${this.region}:${this.account}:task-definition/${taskDefinition.family}:${props.taskDefinitionRevision}`);
-
       // Allow communication from the ECS service's ELB to the ECS ASG, if it exists.
       if (props.ecsAsgSecurityGroup)
         loadBalancedEcsService.loadBalancer.connections.allowTo(props.ecsAsgSecurityGroup, ec2.Port.allTcp());
@@ -128,25 +134,4 @@ export class ApplicationStack extends Stack {
       console.log('DEPLOY_APP not set, skipping Amazon ECS service deployment.');
     }
   }
-
-  /**
-   * WORKAROUND for lack of AWS CDK L2 construct support
-   * Replaces the 'DockerSecurityOptions' property of the first container in "web-site-task" with the new, and still unsupported, 'CredentialSpecOptions' property. 
-   * This enables support for domainless gMSA while the L2 construct are released.
-   */
-  // protected _toCloudFormation() {
-  //   const cf = super._toCloudFormation();
-
-  //   for (const key in cf.Resources) {
-  //     const cfResource = cf.Resources[key];
-
-  //     if (cfResource.Type === "AWS::ECS::TaskDefinition") {
-  //       console.log("Patching ECS task definition...");
-  //       cfResource.Properties.ContainerDefinitions[0].CredentialSpecs = cfResource.Properties.ContainerDefinitions[0].DockerSecurityOptions;
-  //       cfResource.Properties.ContainerDefinitions[0].DockerSecurityOptions = undefined;
-  //       console.log("Patching complete.");
-  //     }
-  //   }
-  //   return cf;
-  // }
 }
