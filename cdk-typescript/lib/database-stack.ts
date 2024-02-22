@@ -48,7 +48,9 @@ export class DatabaseStack extends Stack {
     });
 
     // Set up credential rotation for the DB administrator user.
-    sqlServerInstance.addRotationSingleUser();
+    sqlServerInstance.addRotationSingleUser({
+      securityGroup: sqlServerInstance.connections.securityGroups[0], // Workaround for: https://repost.aws/questions/QUr5JL9E9fQKO6nq70njW65w/endpoint-port-does-not-exist-for-security-group-of-rds-proxy
+    });
 
     // Store the database credentials secret ARN in the Systems Manager Parameter Store, so it can be referenced by the Web application stack.
     const sqlServerInstanceSecretArnParameter = new ssm.StringParameter(this, 'sql-server-credentials-secret-arn', {

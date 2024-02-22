@@ -60,7 +60,7 @@ export class BastionHostStack extends Stack {
     generateCredspecContent = replaceAdVariables(generateCredspecContent);
     generateCredspecContent = generateCredspecContent
       .replace('$SolutionId = ""', `$SolutionId = "${props.solutionId}"`)
-      .replace('$DomainlessArn = ""', `$DomainlessArn = "${props.domainlessIdentitySecret.secretArn}"`)
+      .replace('$DomainlessSecretArn = ""', `$DomainlessSecretArn = "${props.domainlessIdentitySecret.secretArn}"`)
       .replace('$CredSpecS3BucketName = ""', `$CredSpecS3BucketName = "${props.credSpecBucket.bucketName}"`);
     addEcsInstancesToAdContent = replaceAdVariables(addEcsInstancesToAdContent);
     loginSqlContent = loginSqlContent
