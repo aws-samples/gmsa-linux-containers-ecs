@@ -33,7 +33,7 @@ Function ConvertFrom-SecureString-AsPlainText {
 }
 
 Write-Output "Downloading database SQL script..."
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_SqlServer_AutoIncrementPKs.sql -OutFile "$PSScriptRoot\Chinook.sql" 
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_SqlServer.sql -OutFile "$PSScriptRoot\Chinook.sql" 
 
 Write-Output "Creating sample database..."
 Invoke-Sqlcmd -ServerInstance $SqlServerInstanceAddress -Username $SqlServerAdminUsername -Password $(ConvertFrom-SecureString-AsPlainText $SqlServerAdminPassword) -InputFile "$PSScriptRoot\Chinook.sql" -Encrypt Optional
