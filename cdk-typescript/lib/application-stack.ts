@@ -86,7 +86,7 @@ export class ApplicationStack extends Stack {
       image: ecs.ContainerImage.fromEcrRepository(webSiteRepository, 'latest'),
       memoryLimitMiB: 512,
       healthCheck: {
-        command: ["CMD-SHELL", "curl -f http://localhost/Privacy || exit 1"]
+        command: ["CMD-SHELL", "curl -f http://localhost:8080/Privacy || exit 1"]
       },
       logging: ecs.LogDrivers.awsLogs({
         streamPrefix: 'web'
@@ -94,12 +94,12 @@ export class ApplicationStack extends Stack {
       credentialSpecs: [credentialSpec],
       environment: {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        // To use Kerberos authentication, you should use a domain FQDM to refere to the SQL Server,
+        // To use Kerberos authentication, you should use a domain FQDM to refer to the SQL Server,
         //   if you use the endpoint provided for by RDS the NTLM auth will be used instead, and will fail.
         "ConnectionStrings__Chinook": `Server=${props.dbInstanceName}.${props.domainName};Database=Chinook;Integrated Security=true;TrustServerCertificate=true;`,
       }
     });
-    webSiteContainer.addPortMappings({ containerPort: 80 });
+    webSiteContainer.addPortMappings({ containerPort: 8080 });
 
     // Gives permission for ECS-Exec to run
     taskDefinition.addToTaskRolePolicy(

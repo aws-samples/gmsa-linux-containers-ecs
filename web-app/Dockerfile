@@ -24,5 +24,5 @@ ENV KRB5CCNAME=/var/credentials-fetcher/krbdir/krb5cc
 WORKDIR /app
 COPY --from=build /app .
 USER $APP_UID
-EXPOSE 80
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "web-app.dll"]
