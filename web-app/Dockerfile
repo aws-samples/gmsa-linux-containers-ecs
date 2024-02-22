@@ -23,6 +23,5 @@ ENV KRB5CCNAME=/var/credentials-fetcher/krbdir/krb5cc
 # -- Copy the app, open ports and set the entry point
 WORKDIR /app
 COPY --from=build /app .
-USER $APP_UID
 EXPOSE 8080
 ENTRYPOINT ["dotnet", "web-app.dll"]
