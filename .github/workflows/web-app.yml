@@ -23,8 +23,8 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    - name: Open web app directory
-      run: cd web-app
+    - name: Debug
+      run: pwd & ls
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
@@ -37,7 +37,5 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-      - name: Open web app directory
-        run: cd web-app
       - name: Build the Docker image
         run: docker build . --file Dockerfile
