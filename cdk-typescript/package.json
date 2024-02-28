@@ -8,7 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "eslint . && cdk",
+    "linit": "eslint",
     "integ": "bash ../ci/run-cdk-integ-tests.sh cdk-typescript",
     "update-integ": "bash ../ci/update-cdk-integ-tests.sh cdk-typescript",
     "install-cdk": "bash ../ci/install-cdk-typescript.sh"
