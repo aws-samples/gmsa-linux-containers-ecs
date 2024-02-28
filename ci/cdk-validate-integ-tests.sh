@@ -41,14 +41,20 @@ function run_cdk_test_case() {
   for file in $(find $source_folder -type f); do
     filename=$(basename $file)
 
+    # Skip cdk.out file.
+    if [ "$filename"="cdk.out" ]; then
+      continue 
+    fi
+
     # Check if the file exists in the target directory
     if [ -f "$target_folder/$filename" ]; then
         # Compare the content of the files
         if cmp -s "$file" "$target_folder/$filename"; then 
           echo > /dev/null
         else
-            error="File '$filename''s content is different."
+            error="File $filename's content is different."
             echo -e $"$TEST_NAME: ${RED}$error${NC}"  
+            diff -u "$file" "$target_folder/$filename"
         fi
     else
         error="File $filename is missing in the integraton tests folder."
