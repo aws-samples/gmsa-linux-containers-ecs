@@ -1,0 +1,987 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "amazon-ecs-gmsa-linux-infrastructure.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "amazon-ecs-gmsa-linux-infrastructure.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "amazon-ecs-gmsa-linux-infrastructure": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "amazon-ecs-gmsa-linux-infrastructure.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/a79574247f010f093ce983e7ea296b0ab19a60877356168166a612a45b5fc4a0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "amazon-ecs-gmsa-linux-infrastructure.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "amazon-ecs-gmsa-linux-infrastructure.assets"
+      ],
+      "metadata": {
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcA2121C38"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1Subnet2E65531E"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1RouteTable48A2DF9B"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1DefaultRoute10708846"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1EIPDA49DCBE"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet1NATGateway9C16659E"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2Subnet009B674F"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2RouteTableEB40D4CB"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2RouteTableAssociation21F81B59"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2DefaultRouteA1EC0F60"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2EIP9B3743B1"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPublicSubnet2NATGateway9B8AE11A"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1Subnet934893E8"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1RouteTableB41A48CC"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1RouteTableAssociation67945127"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet1DefaultRoute1AA8E2E5"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2Subnet7031C2BA"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2RouteTable7280F23E"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2RouteTableAssociation007E94D3"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcPrivateSubnet2DefaultRouteB0E07F99"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcIGWE57CBDCA"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcVPCGW7984C166"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/FlowLogCloudWatch/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcFlowLogCloudWatchIAMRoleF5137BA9"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/FlowLogCloudWatch/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcFlowLogCloudWatchIAMRoleDefaultPolicy81671661"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/FlowLogCloudWatch/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcFlowLogCloudWatchLogGroup6B336362"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/vpc/FlowLogCloudWatch/FlowLog": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "vpcFlowLogCloudWatchFlowLog27550298"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/active-directory-admin-password-secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectoryadminpasswordsecretB1F8F377"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ActiveDirectoryAdminPasswordSecretARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActiveDirectoryAdminPasswordSecretARN"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/active-directory": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectory"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/active-directory-id-ssm-parameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectoryidssmparameter08CA1094"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/active-directory-dhcp-ops": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectorydhcpops"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/directory-dhcp-ops-association": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "directorydhcpopsassociation"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecscluster7830E7B5"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster/ecs-cluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterB48992C7"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/cred-fetcher-identity-secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "credfetcheridentitysecretFEBFB2F2"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/domain-join-ssm-document": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "domainjoinssmdocument"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/active-directory-seamless-join-secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectoryseamlessjoinsecret9100DD98"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/domain-join-ssm-document-alt": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "domainjoinssmdocumentalt"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg-domain-join-ssm-association": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgdomainjoinssmassociation"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgInstanceSecurityGroup1C762339"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgInstanceRole373C335F"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgInstanceRoleDefaultPolicy658DE35B"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgInstanceProfile58E291A6"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgLaunchTemplate80B0A455"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgASG059CF239"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgDrainECSHookFunctionServiceRoleB1D66D19"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgDrainECSHookFunctionServiceRoleDefaultPolicy9ADD1416"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgDrainECSHookFunction0D34BF1E"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/DrainECSHook/Function/AllowInvoke:amazonecsgmsalinuxinfrastructureecsclusterasgLifecycleHookDrainHookTopic49964F95": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgDrainECSHookFunctionAllowInvokeamazonecsgmsalinuxinfrastructureecsclusterasgLifecycleHookDrainHookTopic49964F95856F3D43"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgDrainECSHookFunctionTopicBBFE81D3"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgLifecycleHookDrainHookTopic949ED8AE"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgLifecycleHookDrainHookRole7C464B0B"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgLifecycleHookDrainHookRoleDefaultPolicy90C4C0B3"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgLifecycleHookDrainHook14BB0B6F"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2023--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ecs-cluster-asg-capacity-provider/ecs-cluster-asg-capacity-provider": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsclusterasgcapacityprovider4923E7E5"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/ECSAutoScalingGroupName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ECSAutoScalingGroupName"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/credspec-ssm-parameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "credspecssmparameter4DB3D748"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/credspec-s3-bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "credspecs3bucket2AC0FC3A"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/credspec-s3-bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "credspecs3bucketPolicy3F07CE55"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"vpcPrivateSubnet1Subnet934893E8\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefvpcPrivateSubnet1Subnet934893E8236E2271"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"vpcPrivateSubnet2Subnet7031C2BA\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefvpcPrivateSubnet2Subnet7031C2BA60DCB1EE"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"vpcA2121C38\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefvpcA2121C384D1B3CDE"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Fn::GetAtt\":[\"ecsclusterasgInstanceSecurityGroup1C762339\",\"GroupId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttecsclusterasgInstanceSecurityGroup1C762339GroupIdC6268B2B"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Fn::GetAtt\":[\"activedirectory\",\"Alias\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttactivedirectoryAlias6D90A2A9"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"activedirectoryadminpasswordsecretB1F8F377\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"credfetcheridentitysecretFEBFB2F2\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"credspecssmparameter4DB3D748\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefcredspecssmparameter4DB3D74868B44AFE"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Fn::GetAtt\":[\"credspecs3bucket2AC0FC3A\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttcredspecs3bucket2AC0FC3AArnCFB4DF8C"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"vpcPublicSubnet1Subnet2E65531E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefvpcPublicSubnet1Subnet2E65531ECCB85041"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"credspecs3bucket2AC0FC3A\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefcredspecs3bucket2AC0FC3A928DF580"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"domainjoinssmdocument\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefdomainjoinssmdocumentA1B66A26"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"vpcPublicSubnet2Subnet009B674F\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefvpcPublicSubnet2Subnet009B674FB900C242"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-infrastructure/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "amazon-ecs-gmsa-linux-infrastructure"
+    },
+    "amazon-ecs-gmsa-linux-database.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "amazon-ecs-gmsa-linux-database.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "amazon-ecs-gmsa-linux-database": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "amazon-ecs-gmsa-linux-database.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/8950e2143f83d1bbcd1a360054849cd75282384e9e6f5896c909bdbc5623b451.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "amazon-ecs-gmsa-linux-database.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "amazon-ecs-gmsa-linux-infrastructure",
+        "amazon-ecs-gmsa-linux-database.assets"
+      ],
+      "metadata": {
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/SubnetGroup/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrdsSubnetGroup1BD486EE"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrdsSecurityGroup41387490"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/SecurityGroup/from amazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrdsSecurityGroupfromamazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415IndirectPort9A0E8456"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/SecurityGroup/from amazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CF:1433": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrdsSecurityGroupfromamazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CF14339684ED6C"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "amazonecsgmsalinuxdatabasewebsqlrdsSecret63E60E8B3fdaad7efa858a3daf9490cf0a702aeb"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrdsSecretAttachment4A99E182"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/Secret/Attachment/RotationSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrdsSecretAttachmentRotationScheduleA733CB79"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/Secret/Attachment/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrdsSecretAttachmentPolicy71B09027"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrds54E6B542"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/RotationSingleUser/SARMapping": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrdsRotationSingleUserSARMapping2D0893BE"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/web-sql-rds/RotationSingleUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websqlrdsRotationSingleUserC61EC05A"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/sql-server-credentials-secret-arn/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sqlservercredentialssecretarnEB7B5274"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/rds-role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "rdsroleF9D5EF8C"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/DBInstanceIdentifier": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DBInstanceIdentifier"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/DBInstanceEndpointAddress": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DBInstanceEndpointAddress"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/DBInstanceCredentialsSecretARN": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DBInstanceCredentialsSecretARN"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/Exports/Output{\"Fn::GetAtt\":[\"websqlrdsSecurityGroup41387490\",\"GroupId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttwebsqlrdsSecurityGroup41387490GroupId0BC29D94"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/Exports/Output{\"Ref\":\"websqlrdsSecretAttachment4A99E182\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefwebsqlrdsSecretAttachment4A99E18296C3D383"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/Exports/Output{\"Ref\":\"amazonecsgmsalinuxdatabasewebsqlrdsSecret63E60E8B3fdaad7efa858a3daf9490cf0a702aeb\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefamazonecsgmsalinuxdatabasewebsqlrdsSecret63E60E8B3fdaad7efa858a3daf9490cf0a702aeb74D0F817"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/Exports/Output{\"Fn::GetAtt\":[\"websqlrds54E6B542\",\"Endpoint.Address\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttwebsqlrds54E6B542EndpointAddressD5BC949F"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/Exports/Output{\"Ref\":\"websqlrds54E6B542\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefwebsqlrds54E6B542D4DEE0E3"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-database/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "amazon-ecs-gmsa-linux-database"
+    },
+    "amazon-ecs-gmsa-linux-bastion.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "amazon-ecs-gmsa-linux-bastion.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "amazon-ecs-gmsa-linux-bastion": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "amazon-ecs-gmsa-linux-bastion.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/8b1f9b67d7bfea1f7e22910f4b4551e2802acc95b34d013b76afe62c2a13b0f2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "amazon-ecs-gmsa-linux-bastion.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "amazon-ecs-gmsa-linux-infrastructure",
+        "amazon-ecs-gmsa-linux-database",
+        "amazon-ecs-gmsa-linux-bastion.assets"
+      ],
+      "metadata": {
+        "/amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+            "trace": [
+              "Annotations.addMessage (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/core/lib/annotations.js:1:1608)",
+              "Annotations.addWarningV2 (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/core/lib/annotations.js:1:825)",
+              "SecurityGroup.addEgressRule (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/security-group.js:1:7618)",
+              "/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:1860",
+              "ReactiveList.forEachAndForever (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:5923)",
+              "/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:1821",
+              "ReactiveList.forEachAndForever (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:5923)",
+              "Connections.allowTo (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:1749)",
+              "new BastionHostStack (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/lib/bastion-stack.ts:136:45)",
+              "Object.<anonymous> (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/bin/app.ts:56:22)",
+              "Module._compile (node:internal/modules/cjs/loader:1254:14)",
+              "Module.m._compile (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/index.ts:1618:23)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1308:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/index.ts:1621:12)",
+              "Module.load (node:internal/modules/cjs/loader:1117:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:958:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)",
+              "phase4 (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/bin.ts:649:14)",
+              "bootstrap (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/bin.ts:95:10)",
+              "main (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/bin.ts:55:10)",
+              "Object.<anonymous> (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/bin.ts:800:3)",
+              "Module._compile (node:internal/modules/cjs/loader:1254:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1308:10)",
+              "Module.load (node:internal/modules/cjs/loader:1117:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:958:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectorymanagementinstanceInstanceSecurityGroup90D500F7"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceSecurityGroup/amazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415:1433 to": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectorymanagementinstanceInstanceSecurityGroupamazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup606234151433toF45D365A"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectorymanagementinstanceInstanceRoleDefaultPolicyD7848BE7"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectorymanagementinstanceInstanceProfile055E754F"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "activedirectorymanagementinstanceBB5FEB9F"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/domain-join-ss-document/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "domainjoinssdocument60E00792"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/ecs-asg-inspect/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ecsasginspect16824978"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-bastion/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "amazon-ecs-gmsa-linux-bastion"
+    },
+    "amazon-ecs-gmsa-linux-application.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "amazon-ecs-gmsa-linux-application.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "amazon-ecs-gmsa-linux-application": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "amazon-ecs-gmsa-linux-application.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/c70d3edbcc40ef0bbb55c6c6ac3eaa06eddc310acac7b36c5ef0e77c3c07ab34.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "amazon-ecs-gmsa-linux-application.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "amazon-ecs-gmsa-linux-infrastructure",
+        "amazon-ecs-gmsa-linux-database",
+        "amazon-ecs-gmsa-linux-application.assets"
+      ],
+      "metadata": {
+        "/amazon-ecs-gmsa-linux-application/web-site-task-execution-role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websitetaskexecutionrole64D0C55D"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-task-execution-role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websitetaskexecutionroleDefaultPolicy8F71877E"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-repository/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiterepository3D3B4100"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-task-def/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websitetaskdefTaskRole08B457E5"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-task-def/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websitetaskdefTaskRoleDefaultPolicyD046FDB1"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-task-def/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websitetaskdef45A879FA"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-task-def/web-site-container/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websitetaskdefwebsitecontainerLogGroupC32ECBC6"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceLBA6C7A749"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceLBSecurityGroup23CDD30B"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/SecurityGroup/to amazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CF:ALL PORTS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceLBSecurityGrouptoamazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CFALLPORTS69A648A9"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/SecurityGroup/amazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CF:ALL PORTS to": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceLBSecurityGroupamazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CFALLPORTStoA4E0FD96"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/PublicListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceLBPublicListener0D2B8FBB"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/PublicListener/ECSGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceLBPublicListenerECSGroup5AE8328F"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/LoadBalancerDNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceLoadBalancerDNS34E106AF"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/ServiceURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceServiceURL57DC4B85"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceServiceA9BFCB33"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "amazon-ecs-gmsa-linux-application"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

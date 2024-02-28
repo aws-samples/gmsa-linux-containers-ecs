@@ -1,0 +1,806 @@
+{
+ "Resources": {
+  "activedirectorymanagementinstanceInstanceSecurityGroup90D500F7": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "127.0.0.0/32",
+      "Description": "from 127.0.0.0/32:3389",
+      "FromPort": 3389,
+      "IpProtocol": "tcp",
+      "ToPort": 3389
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "ad-domain-join",
+      "Value": "amazon-ecs-gmsa-linux"
+     },
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance"
+     }
+    ],
+    "VpcId": {
+     "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcA2121C384D1B3CDE"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceSecurityGroup/Resource"
+   }
+  },
+  "activedirectorymanagementinstanceInstanceSecurityGroupamazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup606234151433toF45D365A": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from AD management instance",
+    "FromPort": 1433,
+    "GroupId": {
+     "Fn::ImportValue": "amazon-ecs-gmsa-linux-database:ExportsOutputFnGetAttwebsqlrdsSecurityGroup41387490GroupId0BC29D94"
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "activedirectorymanagementinstanceInstanceSecurityGroup90D500F7",
+      "GroupId"
+     ]
+    },
+    "ToPort": 1433
+   },
+   "Metadata": {
+    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceSecurityGroup/amazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415:1433 to"
+   }
+  },
+  "activedirectorymanagementinstanceInstanceRole8E7D9EE2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMDirectoryServiceAccess"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "ad-domain-join",
+      "Value": "amazon-ecs-gmsa-linux"
+     },
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceRole/Resource"
+   }
+  },
+  "activedirectorymanagementinstanceInstanceRoleDefaultPolicyD7848BE7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "amazon-ecs-gmsa-linux-database:ExportsOutputRefwebsqlrdsSecretAttachment4A99E18296C3D383"
+        },
+        {
+         "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+        },
+        {
+         "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+        }
+       ]
+      },
+      {
+       "Action": [
+        "ssm:DescribeParameters",
+        "ssm:GetParameter",
+        "ssm:GetParameterHistory",
+        "ssm:GetParameters",
+        "ssm:PutParameter"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:us-east-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter",
+          {
+           "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredspecssmparameter4DB3D74868B44AFE"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputFnGetAttcredspecs3bucket2AC0FC3AArnCFB4DF8C"
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputFnGetAttcredspecs3bucket2AC0FC3AArnCFB4DF8C"
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "activedirectorymanagementinstanceInstanceRoleDefaultPolicyD7848BE7",
+    "Roles": [
+     {
+      "Ref": "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceRole/DefaultPolicy/Resource"
+   }
+  },
+  "activedirectorymanagementinstanceInstanceProfile055E754F": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceProfile"
+   }
+  },
+  "activedirectorymanagementinstanceBB5FEB9F": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "IamInstanceProfile": {
+     "Ref": "activedirectorymanagementinstanceInstanceProfile055E754F"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t3.large",
+    "KeyName": "gmsa",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "activedirectorymanagementinstanceInstanceSecurityGroup90D500F7",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcPublicSubnet1Subnet2E65531ECCB85041"
+    },
+    "Tags": [
+     {
+      "Key": "ad-domain-join",
+      "Value": "amazon-ecs-gmsa-linux"
+     },
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": {
+      "Fn::Join": [
+       "",
+       [
+        "<powershell>Write-Output \"Installing the Active Directory management tools...\"\nInstall-WindowsFeature -Name \"RSAT-AD-Tools\" -IncludeAllSubFeature\nWrite-Output \"Installing Nuget...\"\nInstall-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force\nWrite-Output \"Installing CredentialSpec PS module...\"\nInstall-Module CredentialSpec -Force\nWrite-Output \"Installing SqlServer module for Powershell...\"\nInstall-Module -Name SqlServer -Force\nWrite-Output \"Writing support scripts...\"\nRemove-Item \"C:\\SampleConfig\" -Force -Recurse -ErrorAction SilentlyContinue\nNew-Item \"C:\\SampleConfig\" -itemType Directory\nSet-Content -Path \"C:\\SampleConfig\\Configure-AD.ps1\" -Value @\"\n[CmdletBinding()]\nparam(\n    [Parameter()]\n    [string] `$AdDomainName = \"directory.amazon-ecs-gmsa-linux.com\",\n\n    [Parameter()]\n    [string] `$AdAdminUsername = \"admin\",\n\n    [Parameter(Mandatory = `$true)]\n    [SecureString] `$AdAdminPassword,\n\n    [Parameter()]\n    [string] `$GmsaName = \"SampleWebApp\",\n\n    [Parameter()]\n    [string] `$GmsaGroupName = \"SampleWebAppGmsaPrincipals\",\n\n    [Parameter(Mandatory = `$true)]\n    [string] `$GmsaUserName,\n\n    [Parameter(Mandatory = `$true)]\n    [SecureString] `$GmsaUserPassword\n)\n\n# Create AD admin credentials because script is going to run under a non-domain joined state\n`$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList \"`$AdAdminUsername@`$AdDomainName\", `$AdAdminPassword\n\n\nWrite-Output \"Creating AD security group for gMSA...\"\ntry {\n    Get-AdGroup -Identity `$GmsaGroupName -Server `$AdDomainName  -Credential `$credential | Out-Null\n    Write-Output \"AD group already exists.\"\n}\ncatch {\n    New-ADGroup -Name `$GmsaGroupName -SamAccountName `$GmsaGroupName -GroupScope DomainLocal -Server `$AdDomainName -Credential `$credential\n    Write-Output \"AD group created.\"\n}\n\n\nWrite-Output \"Creating gMSA account...\"\ntry{\n    Get-ADServiceAccount -Identity `$GmsaName -Server `$AdDomainName -Credential `$credential | Out-Null\n    Write-Output \"AD gMSA acount already exists.\"\n}\ncatch{\n    New-ADServiceAccount -Name `$GmsaName -DnsHostName \"`$GmsaName.`$AdDomainName\" -ServicePrincipalNames \"host/`$GmsaName\", \"host/`$GmsaName.`$AdDomainName\" -PrincipalsAllowedToRetrieveManagedPassword `$GmsaGroupName -Server `$AdDomainName -Credential `$credential\n    Write-Output \"AD gMSA created.\"\n}\n\n\nWrite-Output \"Creating AD user...\"\ntry{\n    Get-ADUser -Identity `$GmsaUserName -Server `$AdDomainName -Credential `$credential | Out-Null\n    Write-Output \"AD user already exists.\"\n}\ncatch{\n    New-ADUser -Name `$GmsaUserName  -UserPrincipalName \"`$GmsaUserName@`$AdDomainName\" -Server `$AdDomainName -Credential `$credential\n    Write-Output \"AD user created.\"\n}\n\nWrite-Output \"Resetting AD user password...\"\nSet-ADAccountPassword -Identity `$GmsaUserName -Reset -NewPassword `$GmsaUserPassword -Server `$AdDomainName -Credential `$credential\nEnable-ADAccount -Identity `$GmsaUserName -Server `$AdDomainName -Credential `$credential\n\nWrite-Output \"Adding AD user to gMSA security group...\"\nAdd-ADGroupMember -Identity `$GmsaGroupName -Members \"`$GmsaUserName\" -Server `$AdDomainName -Credential `$credential\n\"@\nSet-Content -Path \"C:\\SampleConfig\\Configure-Database.ps1\" -Value @\"\n[CmdletBinding()]\nparam(\n    [Parameter(Mandatory = `$true)]\n    [string] `$SqlServerInstanceAddress,\n\n    [Parameter(Mandatory = `$true)]\n    [string] `$SqlServerAdminUsername,\n\n    [Parameter(Mandatory = `$true)]\n    [SecureString] `$SqlServerAdminPassword\n)\n\n<# \n    .SYNOPSIS\n    Converts a SecureString into a plain text String.\n\n    .PARAMETER SecureString\n    Secure string to convert.\n#>\nFunction ConvertFrom-SecureString-AsPlainText {\n    [CmdletBinding()]\n    param (\n        [Parameter(\n            Mandatory = `$true,\n            ValueFromPipeline = `$true\n        )]\n        [System.Security.SecureString]\n        `$SecureString\n    )\n    `$bstr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR(`$SecureString);\n    `$PlainTextString = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(`$bstr);\n    `$PlainTextString;\n}\n\nWrite-Output \"Downloading database SQL script...\"\nInvoke-WebRequest -Uri https://raw.githubusercontent.com/lerocha/chinook-database/master/ChinookDatabase/DataSources/Chinook_SqlServer.sql -OutFile \"`$PSScriptRoot\\Chinook.sql\" \n\nWrite-Output \"Creating sample database...\"\nInvoke-Sqlcmd -ServerInstance `$SqlServerInstanceAddress -Username `$SqlServerAdminUsername -Password `$(ConvertFrom-SecureString-AsPlainText `$SqlServerAdminPassword) -InputFile \"`$PSScriptRoot\\Chinook.sql\" -Encrypt Optional\n\nWrite-Output \"Creating SQL login and users for AD principals...\"\nInvoke-Sqlcmd -ServerInstance `$SqlServerInstanceAddress -Username `$SqlServerAdminUsername -Password `$(ConvertFrom-SecureString-AsPlainText `$SqlServerAdminPassword) -InputFile \"`$PSScriptRoot/login.sql\" -Encrypt Optional\n\nWrite-Output \"Making sure the database is onlne...\"\nInvoke-Sqlcmd -ServerInstance `$SqlServerInstanceAddress -Username `$SqlServerAdminUsername -Password `$(ConvertFrom-SecureString-AsPlainText `$SqlServerAdminPassword) -Query \"EXEC rdsadmin.dbo.rds_set_database_online N'Chinook'\" -Encrypt Optional\n\"@\nSet-Content -Path \"C:\\SampleConfig\\login.sql\" -Value @\"\nUSE [master]\nGO\n\n-- Create AD admin SQL Login\nIF NOT EXISTS \n    (SELECT name  \n     FROM sys.server_principals\n     WHERE name = 'directory\\admin')\nBEGIN\n    CREATE LOGIN [directory\\admin] FROM WINDOWS WITH DEFAULT_DATABASE = [Chinook]\n\n    -- These permisions and roles are set to make the ad admin user equal to the RDS admin user\n    GRANT ALTER ANY CONNECTION TO [directory\\admin] WITH GRANT OPTION \n    GRANT ALTER ANY CREDENTIAL TO [directory\\admin] WITH GRANT OPTION \n    GRANT ALTER ANY EVENT SESSION TO [directory\\admin] WITH GRANT OPTION \n    GRANT ALTER ANY LOGIN TO [directory\\admin] WITH GRANT OPTION\n    GRANT ALTER ANY SERVER AUDIT TO [directory\\admin] WITH GRANT OPTION \n    GRANT ALTER ANY SERVER ROLE TO [directory\\admin] WITH GRANT OPTION \n    GRANT ALTER SERVER STATE TO [directory\\admin] WITH GRANT OPTION \n    GRANT ALTER TRACE TO [directory\\admin] WITH GRANT OPTION \n    GRANT CREATE ANY DATABASE TO [directory\\admin] WITH GRANT OPTION \n    GRANT VIEW ANY DATABASE TO [directory\\admin] WITH GRANT OPTION \n    GRANT VIEW ANY DEFINITION TO [directory\\admin] WITH GRANT OPTION \n    GRANT VIEW SERVER STATE TO [directory\\admin] WITH GRANT OPTION \n    ALTER SERVER ROLE [processadmin] ADD MEMBER [directory\\admin]\n    ALTER SERVER ROLE [setupadmin] ADD MEMBER [directory\\admin] \n\n    PRINT 'AD user login created'\nEND\n\n-- Create gMSA SQL Login\nIF NOT EXISTS \n    (SELECT name  \n     FROM sys.server_principals\n     WHERE name = 'directory\\SampleWebApp$')\nBEGIN\n    CREATE LOGIN [directory\\SampleWebApp$] FROM WINDOWS WITH DEFAULT_DATABASE = [Chinook]    \n\n    -- This is necesary for querying sys.dm_exec_connections\n    GRANT VIEW SERVER STATE TO [directory\\SampleWebApp$]\n    \n    PRINT 'AD gMSA login created'\nEND\nGO\n\nUSE [Chinook]\nGO\n\n-- Create AD admin DB user\nIF NOT EXISTS \n    (SELECT name  \n     FROM sys.database_principals\n     WHERE name = 'directory\\admin')\nBEGIN\n    CREATE USER [directory\\admin] FOR LOGIN [directory\\admin] WITH DEFAULT_SCHEMA=[dbo]\n    PRINT 'AD user DB user created'    \nEND\nGO\nEXEC sp_addrolemember N'db_owner', N'directory\\admin'\nGO\n\n-- Create gMSA DB user\nIF NOT EXISTS \n    (SELECT name  \n     FROM sys.database_principals\n     WHERE name = 'directory\\SampleWebApp$')\nBEGIN\n    CREATE USER [directory\\SampleWebApp$] FOR LOGIN [directory\\SampleWebApp$] WITH DEFAULT_SCHEMA=[dbo]\n    PRINT 'AD gMSA DB user created'\nEND\nGO\nEXEC sp_addrolemember N'db_owner', N'directory\\SampleWebApp$'\nGO\n\"@\nSet-Content -Path \"C:\\SampleConfig\\Generate-CredSpec.ps1\" -Value @\"\n[CmdletBinding()]\nparam(\n    [Parameter()]\n    [string] `$SolutionId = \"amazon-ecs-gmsa-linux\",\n\n    [Parameter()]\n    [string] `$AdDomainName = \"directory.amazon-ecs-gmsa-linux.com\",\n\n    [Parameter()]\n    [string] `$GmsaName = \"SampleWebApp\",\n\n    [Parameter()]\n    [string] `$GmsaGroupName = \"SampleWebAppGmsaPrincipals\",\n\n    [Parameter()]\n    [string] `$DomainlessSecretArn = \"",
+        {
+         "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+        },
+        "\",\n\n    [Parameter()]\n    [string] `$CredSpecS3BucketName = \"",
+        {
+         "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredspecs3bucket2AC0FC3A928DF580"
+        },
+        "\"\n)\n\n`$ErrorActionPreference = \"Stop\" \n\nWrite-Output \"Generating gMSA credential spec...\"\n`$credSpecFile = New-CredentialSpec -AccountName `$GmsaName -Domain `$AdDomainName -Path \"`$PSScriptRoot\\`$GmsaName.json\"\n\n# Parses CredSpec content\n`$credSpec = Get-Content `$credSpecFile.Path -Raw | ConvertFrom-Json \n\n# Adds \"HostAccountConfig\" if domainless AWS Secret/AWS Parameter was provided\nif (`$DomainlessSecretArn) {\n    Write-Output \"Adding domainless configuration to credential spec...\"\n    `$credSpec.ActiveDirectoryConfig | Add-Member  -NotePropertyName HostAccountConfig -NotePropertyValue @{\n        PortableCcgVersion = \"1\";\n        PluginGUID         = \"{859E1386-BDB4-49E8-85C7-3070B13920E1}\";\n        PluginInput        = @{\n            CredentialArn = `$DomainlessSecretArn\n        };\n    }\n}\n\n# Convert the CredSpec to minimized JSON and saves it to the original file\n`$credSpecContent = `$credSpec | ConvertTo-Json -Depth 5 -Compress\n`$credSpecContent | Set-Content -Path `$credSpecFile.Path\n\nWrite-Output \"Updating SSM Parameter with CredSpec content...\"\nWrite-SSMParameter -Name \"/`$SolutionId/credspec\" -Value `$credSpecContent -Overwrite `$true\n\nWrite-Output \"Updating S3 bucket with CredSpec content...\"\nWrite-S3Object -BucketName `$CredSpecS3BucketName -Key \"`$SolutionId-CredSpec\" -File `$credSpecFile.Path\n\"@\nSet-Content -Path \"C:\\SampleConfig\\Add-ECSContainerInstancesToADGroup.ps1\" -Value @\"\n[CmdletBinding()]\nparam(\n    [Parameter()]\n    `$GmsaGroupName = \"SampleWebAppGmsaPrincipals\",\n\n    [Parameter(Mandatory = `$true)]\n    `$EcsAsgName = \"\"\n)\n\nWrite-Host \"Obtaining Amazon ECS ASG information...\"\n`$ASG = Get-ASAutoScalingGroup -AutoScalingGroupName `$EcsAsgName\n\nforeach (`$actualAsgInstance in `$ASG.Instances) {\n    Write-Host \"Obtaining information for instance `$(`$actualAsgInstance.InstanceId)...\"\n    `$containerInstance = `$(Get-EC2Instance -InstanceId `$actualAsgInstance.InstanceId).Instances\n\n    Write-Host \"Obtaining AD computer object for instance `$(`$actualAsgInstance.InstanceId)...\"\n    `$adComputerDnsName = `$containerInstance.PrivateDnsName.Split('.')[0] #.Substring(0,15)\n    `$adComputer = Get-ADComputer -Filter \"DnsHostName -eq \"\"`$adComputerDnsName\"\"\"\n    \n    Write-Host \"Adding AD computer `$(`$adComputer.Name) to AD group `$GmsaGroupName...\"\n    Add-ADGroupMember -Identity `$GmsaGroupName -Members \"`$(`$adComputer.Name)`$\"\n}\n\nWrite-Host \"Amazon ECS instances added succesfully.\"\n\"@\nWrite-Output \"Getting Active Directory credentials...\"\n$adAdminPasswordSecret = Get-SECSecretValue -SecretId \"",
+        {
+         "Fn::Join": [
+          "-",
+          [
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             2,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             3,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             4,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             5,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             6,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         ]
+        },
+        "\"\n$adAdminPassword = ConvertTo-SecureString $adAdminPasswordSecret.SecretString  -AsPlainText -Force\n$gmsaUserSecret = Get-SECSecretValue -SecretId \"",
+        {
+         "Fn::Join": [
+          "-",
+          [
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             2,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             3,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             4,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             5,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         ]
+        },
+        "\"\n$gmsaUserName =  $(ConvertFrom-Json $gmsaUserSecret.SecretString).username\n$gmsaUserPassword = ConvertTo-SecureString  $(ConvertFrom-Json $gmsaUserSecret.SecretString).password -AsPlainText -Force\n$sqlServerAdminPasswordSecret = Get-SECSecretValue -SecretId \"",
+        {
+         "Fn::Join": [
+          "-",
+          [
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-database:ExportsOutputRefamazonecsgmsalinuxdatabasewebsqlrdsSecret63E60E8B3fdaad7efa858a3daf9490cf0a702aeb74D0F817"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "-",
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Fn::ImportValue": "amazon-ecs-gmsa-linux-database:ExportsOutputRefamazonecsgmsalinuxdatabasewebsqlrdsSecret63E60E8B3fdaad7efa858a3daf9490cf0a702aeb74D0F817"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         ]
+        },
+        "\"\n$sqlServerAdminUsername = $(ConvertFrom-Json $sqlServerAdminPasswordSecret.SecretString).username\n$sqlServerAdminPassword = ConvertTo-SecureString  $(ConvertFrom-Json $sqlServerAdminPasswordSecret.SecretString).password -AsPlainText -Force\nWrite-Output \"Configuring the Active Directory...\"\nC:\\SampleConfig\\Configure-AD.ps1 -AdAdminPassword $adAdminPassword -GmsaUserName $gmsaUserName -GmsaUserPassword $gmsaUserPassword\nWrite-Output \"Configuring the database...\"\nC:\\SampleConfig\\Configure-Database.ps1 -SqlServerInstanceAddress \"",
+        {
+         "Fn::ImportValue": "amazon-ecs-gmsa-linux-database:ExportsOutputFnGetAttwebsqlrds54E6B542EndpointAddressD5BC949F"
+        },
+        "\" -SqlServerAdminUsername $sqlServerAdminUsername -SqlServerAdminPassword $sqlServerAdminPassword\nWrite-Output \"Installing Chocolatey...\"\niex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))\nImport-Module \"$env:ChocolateyInstall\\helpers\\chocolateyInstaller.psm1\"\nchoco feature enable -n allowGlobalConfirmation\nWrite-Output \"Installing Microsoft SQL Server Management Studio...\"\nchoco install sql-server-management-studio\nWrite-Output \"Configuration complete.\"</powershell>"
+       ]
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "activedirectorymanagementinstanceInstanceRoleDefaultPolicyD7848BE7",
+    "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/Resource"
+   }
+  },
+  "domainjoinssdocument60E00792": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ssm:SendCommand",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ec2:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":instance/",
+           {
+            "Ref": "activedirectorymanagementinstanceBB5FEB9F"
+           }
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ssm:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":document/",
+           {
+            "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefdomainjoinssmdocumentA1B66A26"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "domainjoinssdocument60E00792",
+    "Roles": [
+     {
+      "Ref": "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/domain-join-ss-document/Resource"
+   }
+  },
+  "ecsasginspect16824978": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "autoscaling:DescribeAutoScalingGroups",
+        "ec2:DescribeInstances"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ecsasginspect16824978",
+    "Roles": [
+     {
+      "Ref": "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/ecs-asg-inspect/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/32PwQ6CMAyGn8X7qEJiomcPhpuBBzBzFFMYm+k2DVn27gJKvHn62+9v/7QF5MURdhv5cplq+kzTDWLtpepFhc4GVigm7xpRFRBL47w0E6pRBSY/ntmGhzi15j8ozZ3RuZmvEUmQHCBWVuOMF71YTWqc21+1zl/YtqQxpcWWLAf0yMvq984kjG0QOrd95gfI99NXnSPKOBhPA0L10Td2hSgs8gAAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-Base"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
