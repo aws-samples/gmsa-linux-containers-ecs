@@ -2,7 +2,8 @@
 
 This repository contains sample code for the AWS Blog Posts [Using Windows Authentication with gMSA on Linux Containers on Amazon ECS](https://aws.amazon.com/blogs/containers/using-windows-authentication-with-gmsa-on-linux-containers-on-amazon-ecs/) and [Windows authentication with gMSA on Linux containers on Amazon ECS with AWS Fargate](https://aws.amazon.com/blogs/containers/windows-authentication-with-gmsa-on-linux-containers-on-amazon-ecs-with-aws-fargate/).
 
-| ![Sample solution architecture diagram EC2](/docs/images/architecture_ec2.jpg) | ![Sample solution architecture diagram Fargate](/docs/images/architecture_fargate.jpg) |
+![Sample solution architecture diagram EC2](/docs/images/architecture_ec2.jpg)
+![Sample solution architecture diagram Fargate](/docs/images/architecture_fargate.jpg)
 
 ## Pre-requisites
 
@@ -128,7 +129,7 @@ This will start the deployment of three AWS CloudFormation stacks that contain t
 
 2. Manually delete the **amazon-ecs-gmsa-linux-infrastructure-vpcFlowLogCloudWatchLogGroupXXXXXXX-XXXXXXXXXXXX** Amazon CloudWatch log group created by CDK.
 
-## Security
+## Contributing and Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
