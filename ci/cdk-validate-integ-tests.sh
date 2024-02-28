@@ -17,6 +17,7 @@ CDK_OUT_PATH="$CDK_FOLDER/cdk.out"
 INTEG_PATH="$CDK_FOLDER/integ-tests"
 
 # Set variables needed for CDK across all tests 
+export AWS_DEFAULT_REGION=us-west-2
 export EC2_INSTANCE_KEYPAIR_NAME="gmsa"
 export MY_SG_INGRESS_IP="127.0.0.0"
 
