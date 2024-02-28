@@ -46,8 +46,8 @@ function run_cdk_test_case() {
   for file in $(find $source_folder -type f); do
     filename=$(basename $file)
 
-    # Skip cdk.out file.
-    if [ "$filename" == "cdk.out" ]; then
+    # Skip CDK files that have greater variance depending on evironment where they are run.
+    if [ "$filename" == "cdk.out" ] || [ "$filename" == "manifest.json" ] || [ "$filename" == "tree.json" ]; then
       continue 
     fi
 
