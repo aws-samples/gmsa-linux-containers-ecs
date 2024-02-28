@@ -9,6 +9,10 @@ on:
     branches: [ "main" ]
     paths: [ "cdk-typescript/**" ]
 
+defaults:
+  run:
+    working-directory: ./cdk-typescript
+
 jobs:
   build-cdk:
     runs-on: ubuntu-latest
@@ -16,16 +20,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup CDK
-      run: bash ../ci/install-cdk-typescript.sh
-      working-directory: ./cdk-typescript
-
     - name: Install NPM dependencies
       run: npm install
       working-directory: ./cdk-typescript
 
-    - name: Debug
-      run: cdk version
+    - name: Setup CDK
+      run: npm run install-cdk
 
     - name: Run CDK integration tests
-      run: bash ./ci/run-cdk-integ-tests.sh cdk-typescript
+      run: npm run integ

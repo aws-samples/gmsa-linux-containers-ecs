@@ -84,4 +84,5 @@ const appStack = new ApplicationStack(app, `${config.props.SOLUTION_ID}-applicat
   readCredSpecFromS3: config.props.CREDSPEC_FROM_S3 === '1',
   domainlessIdentitySecret: infraStack.domainlessIdentitySecret,
   deployService: config.props.DEPLOY_APP === '1',
+  sqlServerRdsInstance: dbStack.sqlServerInstance,
 });

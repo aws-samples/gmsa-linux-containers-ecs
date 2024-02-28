@@ -12,6 +12,7 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecs_patterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as rds from 'aws-cdk-lib/aws-rds';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 export interface ApplicationStackProps extends StackProps {
@@ -27,6 +28,7 @@ export interface ApplicationStackProps extends StackProps {
   readCredSpecFromS3: boolean,
   domainlessIdentitySecret: secretsmanager.Secret,
   deployService: boolean,
+  sqlServerRdsInstance: rds.DatabaseInstance,
 }
 
 export class ApplicationStack extends Stack {
@@ -125,6 +127,9 @@ export class ApplicationStack extends Stack {
         new ecs_patterns.ApplicationLoadBalancedFargateService(this, 'web-site-ec2-service', serviceProperties) :
         new ecs_patterns.ApplicationLoadBalancedEc2Service(this, 'web-site-ec2-service', serviceProperties);
       loadBalancedEcsService.targetGroup.configureHealthCheck({ path: '/Privacy' });
+
+      // Allow the ECS service to connect to the database.
+      loadBalancedEcsService.service.connections.allowTo(props.sqlServerRdsInstance, ec2.Port.tcp(1433), 'from ECS service');
 
       // Allow communication from the ECS service's ELB to the ECS ASG, if it exists.
       if (props.ecsAsgSecurityGroup)

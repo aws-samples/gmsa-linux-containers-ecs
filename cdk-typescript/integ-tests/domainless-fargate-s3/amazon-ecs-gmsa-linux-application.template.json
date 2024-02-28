@@ -560,6 +560,28 @@
     "websitetaskdefTaskRoleDefaultPolicyD046FDB1",
     "websitetaskdefTaskRole08B457E5"
    ]
+  },
+  "websiteec2serviceServiceSecurityGroupamazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup606234151433to9244AF63": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from ECS service",
+    "FromPort": 1433,
+    "GroupId": {
+     "Fn::ImportValue": "amazon-ecs-gmsa-linux-database:ExportsOutputFnGetAttwebsqlrdsSecurityGroup41387490GroupId0BC29D94"
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "websiteec2serviceServiceSecurityGroup14205ACA",
+      "GroupId"
+     ]
+    },
+    "ToPort": 1433
+   },
+   "DependsOn": [
+    "websitetaskdefTaskRoleDefaultPolicyD046FDB1",
+    "websitetaskdefTaskRole08B457E5"
+   ]
   }
  },
  "Outputs": {

@@ -8,7 +8,10 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "eslint . && cdk"
+    "cdk": "eslint . && cdk",
+    "integ": "bash ../ci/run-cdk-integ-tests.sh cdk-typescript",
+    "update-integ": "bash ../ci/update-cdk-integ-tests.sh cdk-typescript",
+    "install-cdk": "bash ../ci/install-cdk-typescript.sh"
   },
   "devDependencies": {
     "@types/jest": "^27.5.2",

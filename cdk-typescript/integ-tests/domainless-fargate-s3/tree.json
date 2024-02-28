@@ -3980,6 +3980,32 @@
                           "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                           "version": "2.129.0"
                         }
+                      },
+                      "amazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415:1433 to": {
+                        "id": "amazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415:1433 to",
+                        "path": "amazon-ecs-gmsa-linux-application/web-site-ec2-service/Service/SecurityGroup/amazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415:1433 to",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                          "aws:cdk:cloudformation:props": {
+                            "description": "from ECS service",
+                            "fromPort": 1433,
+                            "groupId": {
+                              "Fn::ImportValue": "amazon-ecs-gmsa-linux-database:ExportsOutputFnGetAttwebsqlrdsSecurityGroup41387490GroupId0BC29D94"
+                            },
+                            "ipProtocol": "tcp",
+                            "sourceSecurityGroupId": {
+                              "Fn::GetAtt": [
+                                "websiteec2serviceServiceSecurityGroup14205ACA",
+                                "GroupId"
+                              ]
+                            },
+                            "toPort": 1433
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                          "version": "2.129.0"
+                        }
                       }
                     },
                     "constructInfo": {

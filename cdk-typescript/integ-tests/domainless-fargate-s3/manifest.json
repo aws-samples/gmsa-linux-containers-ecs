@@ -698,7 +698,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/e0dc70cb3a9740f83cea0a372f836bfec3142b176dfdab726360f271c1977d51.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/5171bab00f7f1521e02c57831d9c86cf45900209b67bc12672b3809cfa5fb736.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -806,6 +806,41 @@
             "data": "websiteec2serviceServiceA9BFCB33"
           }
         ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/Service/SecurityGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+            "trace": [
+              "Annotations.addMessage (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/core/lib/annotations.js:1:1608)",
+              "Annotations.addWarningV2 (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/core/lib/annotations.js:1:825)",
+              "SecurityGroup.addEgressRule (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/security-group.js:1:7618)",
+              "/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:1860",
+              "ReactiveList.forEachAndForever (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:5923)",
+              "/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:1821",
+              "ReactiveList.forEachAndForever (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:5923)",
+              "Connections.allowTo (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/aws-cdk-lib/aws-ec2/lib/connections.js:1:1749)",
+              "new ApplicationStack (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/lib/application-stack.ts:132:50)",
+              "Object.<anonymous> (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/bin/app.ts:73:18)",
+              "Module._compile (node:internal/modules/cjs/loader:1254:14)",
+              "Module.m._compile (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/index.ts:1618:23)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1308:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/index.ts:1621:12)",
+              "Module.load (node:internal/modules/cjs/loader:1117:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:958:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)",
+              "phase4 (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/bin.ts:649:14)",
+              "bootstrap (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/bin.ts:95:10)",
+              "main (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/bin.ts:55:10)",
+              "Object.<anonymous> (/Users/ecrsto/source/github/gmsa-linux-containers-ecs/cdk-typescript/node_modules/ts-node/src/bin.ts:800:3)",
+              "Module._compile (node:internal/modules/cjs/loader:1254:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1308:10)",
+              "Module.load (node:internal/modules/cjs/loader:1117:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:958:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)",
+              "node:internal/main/run_main_module:23:47"
+            ]
+          }
+        ],
         "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/Service/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -816,6 +851,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "websiteec2serviceServiceSecurityGroupfromamazonecsgmsalinuxapplicationwebsiteec2serviceLBSecurityGroup826E28FE808013A11158"
+          }
+        ],
+        "/amazon-ecs-gmsa-linux-application/web-site-ec2-service/Service/SecurityGroup/amazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415:1433 to": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "websiteec2serviceServiceSecurityGroupamazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup606234151433to9244AF63"
           }
         ],
         "/amazon-ecs-gmsa-linux-application/BootstrapVersion": [
