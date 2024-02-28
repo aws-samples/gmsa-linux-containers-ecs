@@ -13,12 +13,13 @@ on:
 defaults:
   run:
     working-directory: ./web-app
+    
 jobs:
-  build-dot-net:
+  build-dotnet:
     runs-on: ubuntu-latest
 
     env:
-      VS_SOLUTION: 'Sweb-app.sln '
+      VS_SOLUTION: 'web-app.sln'
 
     steps:
     - uses: actions/checkout@v4
