@@ -15,9 +15,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup CDK
-      run: npm install -g aws-cdk
+      run: bash ./ci/cdk-typescript-install.sh
+      working-directory: ./cdk-typescript
 
     - name: Install NPM dependencies
       run: npm install
