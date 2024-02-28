@@ -155,7 +155,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":ssm:us-east-1:",
+          ":ssm:us-west-2:",
           {
            "Ref": "AWS::AccountId"
           },
@@ -682,7 +682,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":ec2:us-east-1:",
+           ":ec2:us-west-2:",
            {
             "Ref": "AWS::AccountId"
            },
@@ -701,7 +701,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":ssm:us-east-1:",
+           ":ssm:us-west-2:",
            {
             "Ref": "AWS::AccountId"
            },

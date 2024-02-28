@@ -1893,7 +1893,7 @@
                                                 {
                                                   "Ref": "AWS::Partition"
                                                 },
-                                                ":autoscaling:us-east-1:",
+                                                ":autoscaling:us-west-2:",
                                                 {
                                                   "Ref": "AWS::AccountId"
                                                 },
@@ -3054,7 +3054,7 @@
                             "Fn::Join": [
                               "",
                               [
-                                "https://secretsmanager.us-east-1.",
+                                "https://secretsmanager.us-west-2.",
                                 {
                                   "Ref": "AWS::URLSuffix"
                                 }
@@ -3528,7 +3528,7 @@
                                         {
                                           "Ref": "AWS::Partition"
                                         },
-                                        ":ssm:us-east-1:",
+                                        ":ssm:us-west-2:",
                                         {
                                           "Ref": "AWS::AccountId"
                                         },
@@ -4104,7 +4104,7 @@
                                   {
                                     "Ref": "AWS::Partition"
                                   },
-                                  ":ec2:us-east-1:",
+                                  ":ec2:us-west-2:",
                                   {
                                     "Ref": "AWS::AccountId"
                                   },
@@ -4123,7 +4123,7 @@
                                   {
                                     "Ref": "AWS::Partition"
                                   },
-                                  ":ssm:us-east-1:",
+                                  ":ssm:us-west-2:",
                                   {
                                     "Ref": "AWS::AccountId"
                                   },
@@ -4332,7 +4332,7 @@
                                     {
                                       "Ref": "AWS::Partition"
                                     },
-                                    ":ssm:us-east-1:",
+                                    ":ssm:us-west-2:",
                                     {
                                       "Ref": "AWS::AccountId"
                                     },
@@ -4656,7 +4656,7 @@
                               "Ref": "websitetaskdefwebsitecontainerLogGroupC32ECBC6"
                             },
                             "awslogs-stream-prefix": "web",
-                            "awslogs-region": "us-east-1"
+                            "awslogs-region": "us-west-2"
                           }
                         },
                         "environment": [

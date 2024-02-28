@@ -56,7 +56,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":ssm:us-east-1:",
+          ":ssm:us-west-2:",
           {
            "Ref": "AWS::AccountId"
           },
@@ -329,7 +329,7 @@
          "Ref": "websitetaskdefwebsitecontainerLogGroupC32ECBC6"
         },
         "awslogs-stream-prefix": "web",
-        "awslogs-region": "us-east-1"
+        "awslogs-region": "us-west-2"
        }
       },
       "Memory": 512,

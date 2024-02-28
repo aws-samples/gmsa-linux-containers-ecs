@@ -272,7 +272,7 @@
       "Fn::Join": [
        "",
        [
-        "https://secretsmanager.us-east-1.",
+        "https://secretsmanager.us-west-2.",
         {
          "Ref": "AWS::URLSuffix"
         }

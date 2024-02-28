@@ -1357,7 +1357,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":autoscaling:us-east-1:",
+          ":autoscaling:us-west-2:",
           {
            "Ref": "AWS::AccountId"
           },
