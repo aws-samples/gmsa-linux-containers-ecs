@@ -2380,24 +2380,6 @@
               "version": "2.129.0"
             }
           },
-          "CDKMetadata": {
-            "id": "CDKMetadata",
-            "path": "amazon-ecs-gmsa-linux-infrastructure/CDKMetadata",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "amazon-ecs-gmsa-linux-infrastructure/CDKMetadata/Default",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "2.129.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
-            }
-          },
           "Exports": {
             "id": "Exports",
             "path": "amazon-ecs-gmsa-linux-infrastructure/Exports",
@@ -3096,24 +3078,6 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "2.129.0"
-            }
-          },
-          "CDKMetadata": {
-            "id": "CDKMetadata",
-            "path": "amazon-ecs-gmsa-linux-database/CDKMetadata",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "amazon-ecs-gmsa-linux-database/CDKMetadata/Default",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "2.129.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
             }
           },
           "Exports": {
@@ -4075,24 +4039,6 @@
               "version": "2.129.0"
             }
           },
-          "CDKMetadata": {
-            "id": "CDKMetadata",
-            "path": "amazon-ecs-gmsa-linux-bastion/CDKMetadata",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "amazon-ecs-gmsa-linux-bastion/CDKMetadata/Default",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "2.129.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
-            }
-          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "amazon-ecs-gmsa-linux-bastion/BootstrapVersion",
@@ -4910,24 +4856,6 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecs_patterns.ApplicationLoadBalancedEc2Service",
               "version": "2.129.0"
-            }
-          },
-          "CDKMetadata": {
-            "id": "CDKMetadata",
-            "path": "amazon-ecs-gmsa-linux-application/CDKMetadata",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "amazon-ecs-gmsa-linux-application/CDKMetadata/Default",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "2.129.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {

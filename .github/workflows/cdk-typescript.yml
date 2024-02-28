@@ -28,4 +28,4 @@ jobs:
       run: cdk version
 
     - name: Run CDK integration tests
-      run: bash ./ci/cdk-validate-integ-tests.sh cdk-typescript
+      run: bash ./ci/cdk-run-integ-tests.sh cdk-typescript

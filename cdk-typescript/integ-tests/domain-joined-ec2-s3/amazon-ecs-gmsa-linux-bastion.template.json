@@ -33,9 +33,6 @@
     "VpcId": {
      "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcA2121C384D1B3CDE"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceSecurityGroup/Resource"
    }
   },
   "activedirectorymanagementinstanceInstanceSecurityGroupamazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup606234151433toF45D365A": {
@@ -54,9 +51,6 @@
      ]
     },
     "ToPort": 1433
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceSecurityGroup/amazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415:1433 to"
    }
   },
   "activedirectorymanagementinstanceInstanceRole8E7D9EE2": {
@@ -110,9 +104,6 @@
       "Value": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceRole/Resource"
    }
   },
   "activedirectorymanagementinstanceInstanceRoleDefaultPolicyD7848BE7": {
@@ -207,9 +198,6 @@
       "Ref": "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceRole/DefaultPolicy/Resource"
    }
   },
   "activedirectorymanagementinstanceInstanceProfile055E754F": {
@@ -220,9 +208,6 @@
       "Ref": "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/InstanceProfile"
    }
   },
   "activedirectorymanagementinstanceBB5FEB9F": {
@@ -660,10 +645,7 @@
    "DependsOn": [
     "activedirectorymanagementinstanceInstanceRoleDefaultPolicyD7848BE7",
     "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/active-directory-management-instance/Resource"
-   }
+   ]
   },
   "domainjoinssdocument60E00792": {
    "Type": "AWS::IAM::Policy",
@@ -723,9 +705,6 @@
       "Ref": "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/domain-join-ss-document/Resource"
    }
   },
   "ecsasginspect16824978": {
@@ -750,18 +729,6 @@
       "Ref": "activedirectorymanagementinstanceInstanceRole8E7D9EE2"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/ecs-asg-inspect/Resource"
-   }
-  },
-  "CDKMetadata": {
-   "Type": "AWS::CDK::Metadata",
-   "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/32PwQ6CMAyGn8X7qEJiomcPhpuBBzBzFFMYm+k2DVn27gJKvHn62+9v/7QF5MURdhv5cplq+kzTDWLtpepFhc4GVigm7xpRFRBL47w0E6pRBSY/ntmGhzi15j8ozZ3RuZmvEUmQHCBWVuOMF71YTWqc21+1zl/YtqQxpcWWLAf0yMvq984kjG0QOrd95gfI99NXnSPKOBhPA0L10Td2hSgs8gAAAA=="
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-bastion/CDKMetadata/Default"
    }
   }
  },

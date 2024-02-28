@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/4ae37e22b2e169d2a432061f9e1406781558a3d73d2cc5e775d92aa68fe678c2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/bf6cbeced45378e9ea7eaaef5f9c133176d9c63ceaec8c2faca882d1e2aeeac0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -286,12 +286,6 @@
             "data": "credspecs3bucketPolicy3F07CE55"
           }
         ],
-        "/amazon-ecs-gmsa-linux-infrastructure/CDKMetadata/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CDKMetadata"
-          }
-        ],
         "/amazon-ecs-gmsa-linux-infrastructure/Exports/Output{\"Ref\":\"vpcPrivateSubnet1Subnet934893E8\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -396,7 +390,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/79ef7a13ed7f2d77d6d88a669a4a08815167c27b8c4593460c9a41ede3c41137.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/19fd90815c81127fcae614d7bd0f61bd04713dac93d76250164b5d5c7e1b7a3f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -503,12 +497,6 @@
             "data": "DBInstanceCredentialsSecretARN"
           }
         ],
-        "/amazon-ecs-gmsa-linux-database/CDKMetadata/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CDKMetadata"
-          }
-        ],
         "/amazon-ecs-gmsa-linux-database/Exports/Output{\"Fn::GetAtt\":[\"websqlrdsSecurityGroup41387490\",\"GroupId\"]}": [
           {
             "type": "aws:cdk:logicalId",
@@ -571,7 +559,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/466b6fba60f21b570a62c2e1e55f29a67d451dcd1219236d1461aae32b4a8ea1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/a7b4f2d48edbe1871eb588e3b1a9efdb1cd416aa99fbeea5a2bbc3ee2d92b994.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -678,12 +666,6 @@
             "data": "ecsasginspect16824978"
           }
         ],
-        "/amazon-ecs-gmsa-linux-bastion/CDKMetadata/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CDKMetadata"
-          }
-        ],
         "/amazon-ecs-gmsa-linux-bastion/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -716,7 +698,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/abd12b611ea3bd3d37118ecae80c71b4bf68015fa31aefd56225eaf8a33127a4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/e0dc70cb3a9740f83cea0a372f836bfec3142b176dfdab726360f271c1977d51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -834,12 +816,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "websiteec2serviceServiceSecurityGroupfromamazonecsgmsalinuxapplicationwebsiteec2serviceLBSecurityGroup826E28FE808013A11158"
-          }
-        ],
-        "/amazon-ecs-gmsa-linux-application/CDKMetadata/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CDKMetadata"
           }
         ],
         "/amazon-ecs-gmsa-linux-application/BootstrapVersion": [

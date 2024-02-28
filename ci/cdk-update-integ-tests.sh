@@ -30,7 +30,7 @@ function update_cdk_test_case() {
   echo "=================================================="
   echo "$TEST_NAME: Synthesizing CDK..."
   cd $CDK_FOLDER
-  cdk synth
+  cdk synth --path-metadata false --asset-metadata false --version-reporting false
 
   # Copy CDK out to integ-tests folder  
   cp -fr "$CDK_OUT_PATH/" "$INTEG_PATH/$TEST_NAME"

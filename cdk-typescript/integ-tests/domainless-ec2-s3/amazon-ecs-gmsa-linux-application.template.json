@@ -30,9 +30,6 @@
      }
     ],
     "RoleName": "amazon-ecs-gmsa-linux-web-site-task-execution-role"
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-task-execution-role/Resource"
    }
   },
   "websitetaskexecutionroleDefaultPolicy8F71877E": {
@@ -143,9 +140,6 @@
       "Ref": "websitetaskexecutionrole64D0C55D"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-task-execution-role/DefaultPolicy/Resource"
    }
   },
   "websiterepository3D3B4100": {
@@ -154,10 +148,7 @@
     "RepositoryName": "amazon-ecs-gmsa-linux/web-site"
    },
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-repository/Resource"
-   }
+   "DeletionPolicy": "Delete"
   },
   "websitetaskdefTaskRole08B457E5": {
    "Type": "AWS::IAM::Role",
@@ -174,9 +165,6 @@
      ],
      "Version": "2012-10-17"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-task-def/TaskRole/Resource"
    }
   },
   "websitetaskdefTaskRoleDefaultPolicyD046FDB1": {
@@ -218,9 +206,6 @@
       "Ref": "websitetaskdefTaskRole08B457E5"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-task-def/TaskRole/DefaultPolicy/Resource"
    }
   },
   "websitetaskdef45A879FA": {
@@ -360,18 +345,12 @@
       "Arn"
      ]
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-task-def/Resource"
    }
   },
   "websitetaskdefwebsitecontainerLogGroupC32ECBC6": {
    "Type": "AWS::Logs::LogGroup",
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-task-def/web-site-container/LogGroup/Resource"
-   }
+   "DeletionPolicy": "Retain"
   },
   "websiteec2serviceLBA6C7A749": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
@@ -400,9 +379,6 @@
      }
     ],
     "Type": "application"
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/Resource"
    }
   },
   "websiteec2serviceLBSecurityGroup23CDD30B": {
@@ -421,9 +397,6 @@
     "VpcId": {
      "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcA2121C384D1B3CDE"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/SecurityGroup/Resource"
    }
   },
   "websiteec2serviceLBSecurityGrouptoamazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CFALLPORTS69A648A9": {
@@ -442,9 +415,6 @@
     },
     "IpProtocol": "tcp",
     "ToPort": 65535
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/SecurityGroup/to amazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CF:ALL PORTS"
    }
   },
   "websiteec2serviceLBSecurityGroupamazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CFALLPORTStoA4E0FD96": {
@@ -463,9 +433,6 @@
      ]
     },
     "ToPort": 65535
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/SecurityGroup/amazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CF:ALL PORTS to"
    }
   },
   "websiteec2serviceLBPublicListener0D2B8FBB": {
@@ -484,9 +451,6 @@
     },
     "Port": 80,
     "Protocol": "HTTP"
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/PublicListener/Resource"
    }
   },
   "websiteec2serviceLBPublicListenerECSGroup5AE8328F": {
@@ -505,9 +469,6 @@
     "VpcId": {
      "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcA2121C384D1B3CDE"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-ec2-service/LB/PublicListener/ECSGroup/Resource"
    }
   },
   "websiteec2serviceServiceA9BFCB33": {
@@ -547,19 +508,7 @@
     "websiteec2serviceLBPublicListener0D2B8FBB",
     "websitetaskdefTaskRoleDefaultPolicyD046FDB1",
     "websitetaskdefTaskRole08B457E5"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/web-site-ec2-service/Service/Service"
-   }
-  },
-  "CDKMetadata": {
-   "Type": "AWS::CDK::Metadata",
-   "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31SXWvDMAz8LXtPvCUw2B73UcqgsJH0vbiOGtS4trHljhLy32c7bWe2sSef7k7SgVyzqn5kdzf805WiG0qJWza2xMVQNOC0twKKoG1G5Ac2NlpC8bJT6f3QEsUpljOaChA2eMBoh6Rtkr6rKDs2LkS95m54hR0qJNQqun4yWhFHBTbjQl8L9ogiBTjDqZC6D0NXul9a7U2ULjjt2xhOBFY59mRMCMnjrJXm3TOXXAnosrEguSMUMqjbpKLqjzUb/+60866szn3oCNTZc8GZvua2B7pGzsqYOuxsQXiLdLpa/icWvQXnftFvKvHTFJV3T8bTfJP5sFOhdAds726P1QOr7sM32DvE0npFeADWzO8XYIOCoSMCAAA="
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-application/CDKMetadata/Default"
-   }
+   ]
   }
  },
  "Outputs": {

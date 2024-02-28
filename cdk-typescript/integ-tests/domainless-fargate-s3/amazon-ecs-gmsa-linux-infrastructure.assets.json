@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "4ae37e22b2e169d2a432061f9e1406781558a3d73d2cc5e775d92aa68fe678c2": {
+    "bf6cbeced45378e9ea7eaaef5f9c133176d9c63ceaec8c2faca882d1e2aeeac0": {
       "source": {
         "path": "amazon-ecs-gmsa-linux-infrastructure.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-us-west-2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "4ae37e22b2e169d2a432061f9e1406781558a3d73d2cc5e775d92aa68fe678c2.json",
+          "objectKey": "bf6cbeced45378e9ea7eaaef5f9c133176d9c63ceaec8c2faca882d1e2aeeac0.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }

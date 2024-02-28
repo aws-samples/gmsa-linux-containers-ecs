@@ -13,9 +13,6 @@
       "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcPrivateSubnet2Subnet7031C2BA60DCB1EE"
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/SubnetGroup/Default"
    }
   },
   "websqlrdsSecurityGroup41387490": {
@@ -32,9 +29,6 @@
     "VpcId": {
      "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcA2121C384D1B3CDE"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/SecurityGroup/Resource"
    }
   },
   "websqlrdsSecurityGroupfromamazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415IndirectPort9A0E8456": {
@@ -66,9 +60,6 @@
       "Endpoint.Port"
      ]
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/SecurityGroup/from amazonecsgmsalinuxdatabasewebsqlrdsSecurityGroup60623415:{IndirectPort}"
    }
   },
   "websqlrdsSecurityGroupfromamazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CF14339684ED6C": {
@@ -87,9 +78,6 @@
      "Fn::ImportValue": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputFnGetAttecsclusterasgInstanceSecurityGroup1C762339GroupIdC6268B2B"
     },
     "ToPort": 1433
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/SecurityGroup/from amazonecsgmsalinuxinfrastructureecsclusterasgInstanceSecurityGroup9FD668CF:1433"
    }
   },
   "amazonecsgmsalinuxdatabasewebsqlrdsSecret63E60E8B3fdaad7efa858a3daf9490cf0a702aeb": {
@@ -114,10 +102,7 @@
     }
    },
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/Secret/Resource"
-   }
+   "DeletionPolicy": "Delete"
   },
   "websqlrdsSecretAttachment4A99E182": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
@@ -129,9 +114,6 @@
      "Ref": "websqlrds54E6B542"
     },
     "TargetType": "AWS::RDS::DBInstance"
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/Secret/Attachment/Resource"
    }
   },
   "websqlrdsSecretAttachmentRotationScheduleA733CB79": {
@@ -149,9 +131,6 @@
     "SecretId": {
      "Ref": "websqlrdsSecretAttachment4A99E182"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/Secret/Attachment/RotationSchedule/Resource"
    }
   },
   "websqlrdsSecretAttachmentPolicy71B09027": {
@@ -188,9 +167,6 @@
     "SecretId": {
      "Ref": "websqlrdsSecretAttachment4A99E182"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/Secret/Attachment/Policy/Resource"
    }
   },
   "websqlrds54E6B542": {
@@ -239,10 +215,7 @@
     ]
    },
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/Resource"
-   }
+   "DeletionPolicy": "Delete"
   },
   "websqlrdsRotationSingleUserC61EC05A": {
    "Type": "AWS::Serverless::Application",
@@ -304,10 +277,7 @@
     }
    },
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/web-sql-rds/RotationSingleUser/Resource"
-   }
+   "DeletionPolicy": "Delete"
   },
   "sqlservercredentialssecretarnEB7B5274": {
    "Type": "AWS::SSM::Parameter",
@@ -320,9 +290,6 @@
     "Value": {
      "Ref": "websqlrdsSecretAttachment4A99E182"
     }
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/sql-server-credentials-secret-arn/Resource"
    }
   },
   "rdsroleF9D5EF8C": {
@@ -354,18 +321,6 @@
       ]
      }
     ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/rds-role/Resource"
-   }
-  },
-  "CDKMetadata": {
-   "Type": "AWS::CDK::Metadata",
-   "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31RwWrDMAz9lt1dbwkMtmO70tHDWEl2H4qjpW5jO1jyRgn599kJCR2FnWS99/T0kHOZ5c/y4Q5+aKXq86rVlexLBnUWEfrsfU2y3wJDBYR7SwxWoShDZZFfvQudePmy2801MKtLVB554ufJQaDK4wJUwWu+LA7/A3vbeCQaBI2WZMBCg172kzBtmcoH+AZ5zTH/0aBlsQhumMIxsHa2VEesQ4tJeoMVSC54hQfXanUZJX+RyXyeiwHByKhad12kR0y0YKoa5C5YlfpNvIwgMunKXtvmAB4MMvrkvjSD0NGpL9wcrMVhSK836Lo4tSRL2HvgLvB1ukFYV6M80f139iSzx/jBJ9J65YNlbVAWU/0Fa2OMjv0BAAA="
-   },
-   "Metadata": {
-    "aws:cdk:path": "amazon-ecs-gmsa-linux-database/CDKMetadata/Default"
    }
   }
  },

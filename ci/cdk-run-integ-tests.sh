@@ -36,7 +36,7 @@ function run_cdk_test_case() {
   echo "=================================================="
   echo "$TEST_NAME: Synthesizing CDK..."
   cd $CDK_FOLDER
-  cdk synth
+  cdk synth --path-metadata false --asset-metadata false --version-reporting false
 
   source_folder=$CDK_OUT_PATH
   target_folder="$INTEG_PATH/$TEST_NAME"
@@ -100,4 +100,5 @@ if [ $passed_tests -eq $total_tests ]; then
   echo -e "${GREEN}$passed_tests/$total_tests${NC} tests passed."
 else
   echo -e "${RED}$passed_tests/$total_tests${NC} tests passed."
+  exit 1
 fi
