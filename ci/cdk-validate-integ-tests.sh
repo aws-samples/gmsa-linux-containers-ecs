@@ -20,6 +20,10 @@ INTEG_PATH="$CDK_FOLDER/integ-tests"
 export EC2_INSTANCE_KEYPAIR_NAME="gmsa"
 export MY_SG_INGRESS_IP="127.0.0.0"
 
+# Initialize global test execution variables
+total_tests=0
+passed_tests=0
+
 # Defines testing function
 function run_cdk_test_case() {
   export TEST_NAME=$1
@@ -42,7 +46,7 @@ function run_cdk_test_case() {
     filename=$(basename $file)
 
     # Skip cdk.out file.
-    if [ "$filename"="cdk.out" ]; then
+    if [ "$filename" == "cdk.out" ]; then
       continue 
     fi
 
@@ -54,7 +58,7 @@ function run_cdk_test_case() {
         else
             error="File $filename's content is different."
             echo -e $"$TEST_NAME: ${RED}$error${NC}"  
-            diff -u "$file" "$target_folder/$filename"
+            echo -e $(diff -u "$file" "$target_folder/$filename")
         fi
     else
         error="File $filename is missing in the integraton tests folder."
@@ -63,14 +67,19 @@ function run_cdk_test_case() {
 
   done
 
+  total_tests=$((total_tests + 1))
+
   if [ -z "$error" ]; then
     echo -e $"$TEST_NAME: ${GREEN}Test passed${NC}."  
+    passed_tests=$((passed_tests + 1))
   else
     echo -e $"$TEST_NAME: ${RED}Test failed${NC}."  
+    return 0
   fi 
 }
 
 # Run the test cases
+passed=0
 echo "Runing test cases..."
 
 run_cdk_test_case "domain-joined-ec2-ssm" 1 0 0
@@ -81,4 +90,13 @@ run_cdk_test_case "domainless-ec2-s3" 0 0 1
 
 run_cdk_test_case "domainless-fargate-s3" 0 1 1
 
+echo
 echo "Test cases run complete."
+# Outputs test results
+
+echo
+if [ $passed_tests -eq $total_tests ]; then
+  echo -e "${GREEN}$passed_tests/$total_tests${NC} tests passed."
+else
+  echo -e "${RED}$passed_tests/$total_tests${NC} tests passed."
+fi
