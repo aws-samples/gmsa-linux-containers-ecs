@@ -1,0 +1,17 @@
+name: CDK Typescript CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    
+jobs:
+  build-cdk:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup CDK
+      run: bash ./ci/cdk-validate-integ-tests.sh
