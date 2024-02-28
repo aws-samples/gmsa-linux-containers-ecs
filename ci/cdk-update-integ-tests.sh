@@ -19,7 +19,7 @@ export EC2_INSTANCE_KEYPAIR_NAME="gmsa"
 export MY_SG_INGRESS_IP="127.0.0.0"
 
 # Defines testing function
-function run_cdk_test() {
+function update_cdk_test_case() {
   export TEST_NAME=$1
   export DOMAIN_JOIN_ECS=${2:-0}
   export FARGATE=${3:-0}
@@ -38,14 +38,14 @@ function run_cdk_test() {
 }
 
 # Run the test cases
-echo "Running test cases..."
+echo "Updating test cases results..."
 
-run_cdk_test "domain-joined-ec2-ssm" 1 0 0
-run_cdk_test "domain-joined-ec2-s3" 1 0 1
+update_cdk_test_case "domain-joined-ec2-ssm" 1 0 0
+update_cdk_test_case "domain-joined-ec2-s3" 1 0 1
 
-run_cdk_test "domainless-ec2-ssm" 0 0 0
-run_cdk_test "domainless-ec2-s3" 0 0 1
+update_cdk_test_case "domainless-ec2-ssm" 0 0 0
+update_cdk_test_case "domainless-ec2-s3" 0 0 1
 
-run_cdk_test "domainless-fargate-s3" 0 1 1
+update_cdk_test_case "domainless-fargate-s3" 0 1 1
 
 echo "Test cases updated successfully."
