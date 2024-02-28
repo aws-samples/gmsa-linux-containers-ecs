@@ -25,14 +25,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+
     - name: Restore dependencies
       run: dotnet restore $VS_SOLUTION
+
     - name: Build
       run: dotnet build --no-restore $VS_SOLUTION
+
     - name: Test
       run: dotnet test --no-build --verbosity normal $VS_SOLUTION
       
@@ -41,5 +45,6 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+      
       - name: Build the Docker image
         run: docker build . --file Dockerfile

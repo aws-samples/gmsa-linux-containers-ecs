@@ -8,10 +8,6 @@ on:
   pull_request:
     branches: [ "main" ]
     paths: [ "cdk-typescript/**" ]
-    
-defaults:
-    run:
-        working-directory: ./cdk-typescript
 
 jobs:
   build-cdk:
@@ -19,9 +15,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Setup CDK
       run: npm install -g aws-cdk
+
     - name: Install NPM dependencies
       run: npm install
+      working-directory: ./cdk-typescript
+
     - name: Run CDK integration tests
       run: bash ./ci/cdk-validate-integ-tests.sh cdk-typescript
