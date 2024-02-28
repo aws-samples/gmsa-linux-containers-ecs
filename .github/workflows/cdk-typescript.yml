@@ -16,4 +16,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup CDK
+      run: npm install -g aws-cdk
+    - name: Run CDK integration tests
       run: bash ./ci/cdk-validate-integ-tests.sh cdk-typescript
