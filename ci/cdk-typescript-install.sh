@@ -8,4 +8,4 @@ cleaned_version="${aws_cdk_version#^}"
 echo "Version of CDK to install: $cleaned_version"
 
 # Install CDK based on its version
-npm install -g aws-cdk@$cleaned_version
+npm install -g "aws-cdk@$cleaned_version"
