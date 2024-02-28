@@ -4,8 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main" ]
+    paths: [ "cdk-typescript/**" ]
   pull_request:
     branches: [ "main" ]
+    paths: [ "cdk-typescript/**" ]
     
 jobs:
   build-cdk:
@@ -14,4 +16,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Setup CDK
-      run: bash ./ci/cdk-validate-integ-tests.sh
+      run: bash ./ci/cdk-validate-integ-tests.sh cdk-typescript
