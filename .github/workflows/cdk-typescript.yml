@@ -1,1 +1,31 @@
+name: CDK Typescript CI
 
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths: [ "cdk-typescript/**" ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ "cdk-typescript/**" ]
+
+defaults:
+  run:
+    working-directory: ./cdk-typescript
+
+jobs:
+  build-cdk:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install NPM dependencies
+      run: npm install
+      working-directory: ./cdk-typescript
+
+    - name: Setup CDK
+      run: npm run install-cdk
+
+    - name: Run CDK integration tests
+      run: npm run integ

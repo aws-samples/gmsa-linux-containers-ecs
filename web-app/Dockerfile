@@ -1,23 +1,27 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+# Learn about building .NET container images:
+# https://github.com/dotnet/dotnet-docker/blob/main/samples/README.md
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG TARGETARCH
+WORKDIR /source
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["web-app.csproj", "."]
-RUN dotnet restore "./web-app.csproj"
+# -- copy csproj and restore as distinct layers
+COPY *.csproj .
+RUN dotnet restore -a $TARGETARCH
+
+# -- copy and publish app and libraries
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "web-app.csproj" -c Release -o /app/build
+RUN dotnet publish -a $TARGETARCH --no-restore -o /app
 
-FROM build AS publish
-RUN dotnet publish "web-app.csproj" -c Release -o /app/publish
+# final stage/image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
-FROM base AS final
+# -- Enables the app to read the kerberos token where credentials fetcher stores it.
 RUN apt-get update
 RUN apt-get install krb5-user curl -y
 ENV KRB5CCNAME=/var/credentials-fetcher/krbdir/krb5cc
+
+# -- Copy the app, open ports and set the entry point
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app .
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "web-app.dll"]

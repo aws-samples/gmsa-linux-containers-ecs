@@ -1,0 +1,20 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "fba600dd86ef3aef49147635ae9d11d74ae3de256fb24517c8f61d5dcbecfeb1": {
+      "source": {
+        "path": "amazon-ecs-gmsa-linux-application.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-west-2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
+          "objectKey": "fba600dd86ef3aef49147635ae9d11d74ae3de256fb24517c8f61d5dcbecfeb1.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

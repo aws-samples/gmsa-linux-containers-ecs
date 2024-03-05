@@ -1,0 +1,1111 @@
+{
+ "Resources": {
+  "vpcA2121C38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/26",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1Subnet2E65531E": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/28",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "vpcPublicSubnet1RouteTable48A2DF9B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "vpcPublicSubnet1RouteTableAssociation5D3F4579": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
+    }
+   }
+  },
+  "vpcPublicSubnet1DefaultRoute10708846": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "vpcIGWE57CBDCA"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
+    }
+   },
+   "DependsOn": [
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "vpcPublicSubnet1EIPDA49DCBE": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet1NATGateway9C16659E": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "vpcPublicSubnet1EIPDA49DCBE",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcPublicSubnet1DefaultRoute10708846",
+    "vpcPublicSubnet1RouteTableAssociation5D3F4579"
+   ]
+  },
+  "vpcPublicSubnet2Subnet009B674F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.16/28",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "vpcPublicSubnet2RouteTableEB40D4CB": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "vpcPublicSubnet2RouteTableAssociation21F81B59": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
+    }
+   }
+  },
+  "vpcPublicSubnet2DefaultRouteA1EC0F60": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "vpcIGWE57CBDCA"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
+    }
+   },
+   "DependsOn": [
+    "vpcVPCGW7984C166"
+   ]
+  },
+  "vpcPublicSubnet2EIP9B3743B1": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "vpcPublicSubnet2NATGateway9B8AE11A": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "vpcPublicSubnet2EIP9B3743B1",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "vpcPublicSubnet2DefaultRouteA1EC0F60",
+    "vpcPublicSubnet2RouteTableAssociation21F81B59"
+   ]
+  },
+  "vpcPrivateSubnet1Subnet934893E8": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.32/28",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "vpcPrivateSubnet1RouteTableB41A48CC": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "vpcPrivateSubnet1RouteTableAssociation67945127": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
+    },
+    "SubnetId": {
+     "Ref": "vpcPrivateSubnet1Subnet934893E8"
+    }
+   }
+  },
+  "vpcPrivateSubnet1DefaultRoute1AA8E2E5": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
+    }
+   }
+  },
+  "vpcPrivateSubnet2Subnet7031C2BA": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.48/28",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "vpcPrivateSubnet2RouteTable7280F23E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "vpcPrivateSubnet2RouteTableAssociation007E94D3": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
+    },
+    "SubnetId": {
+     "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+    }
+   }
+  },
+  "vpcPrivateSubnet2DefaultRouteB0E07F99": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "vpcPublicSubnet2NATGateway9B8AE11A"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
+    }
+   }
+  },
+  "vpcIGWE57CBDCA": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc"
+     }
+    ]
+   }
+  },
+  "vpcVPCGW7984C166": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "vpcIGWE57CBDCA"
+    },
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "vpcFlowLogCloudWatchIAMRoleF5137BA9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "vpc-flow-logs.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/FlowLogCloudWatch"
+     }
+    ]
+   }
+  },
+  "vpcFlowLogCloudWatchIAMRoleDefaultPolicy81671661": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:DescribeLogStreams",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "vpcFlowLogCloudWatchLogGroup6B336362",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "vpcFlowLogCloudWatchIAMRoleF5137BA9",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "vpcFlowLogCloudWatchIAMRoleDefaultPolicy81671661",
+    "Roles": [
+     {
+      "Ref": "vpcFlowLogCloudWatchIAMRoleF5137BA9"
+     }
+    ]
+   }
+  },
+  "vpcFlowLogCloudWatchLogGroup6B336362": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/FlowLogCloudWatch"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "vpcFlowLogCloudWatchFlowLog27550298": {
+   "Type": "AWS::EC2::FlowLog",
+   "Properties": {
+    "DeliverLogsPermissionArn": {
+     "Fn::GetAtt": [
+      "vpcFlowLogCloudWatchIAMRoleF5137BA9",
+      "Arn"
+     ]
+    },
+    "LogDestinationType": "cloud-watch-logs",
+    "LogGroupName": {
+     "Ref": "vpcFlowLogCloudWatchLogGroup6B336362"
+    },
+    "ResourceId": {
+     "Ref": "vpcA2121C38"
+    },
+    "ResourceType": "VPC",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "amazon-ecs-gmsa-linux-infrastructure/vpc/FlowLogCloudWatch"
+     }
+    ],
+    "TrafficType": "REJECT"
+   }
+  },
+  "activedirectoryadminpasswordsecretB1F8F377": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {
+     "ExcludeCharacters": "\"'"
+    },
+    "Name": "amazon-ecs-gmsa-linux/active-directory-administrator-password"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "activedirectory": {
+   "Type": "AWS::DirectoryService::MicrosoftAD",
+   "Properties": {
+    "Edition": "Standard",
+    "Name": "directory.amazon-ecs-gmsa-linux.com",
+    "Password": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+       },
+       ":SecretString:::}}"
+      ]
+     ]
+    },
+    "VpcSettings": {
+     "SubnetIds": [
+      {
+       "Ref": "vpcPrivateSubnet1Subnet934893E8"
+      },
+      {
+       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+      }
+     ],
+     "VpcId": {
+      "Ref": "vpcA2121C38"
+     }
+    }
+   }
+  },
+  "activedirectoryidssmparameter08CA1094": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "AllowedPattern": ".*",
+    "Description": "Active Directory ID",
+    "Name": "/amazon-ecs-gmsa-linux/active-directory-id",
+    "Tier": "Standard",
+    "Type": "String",
+    "Value": {
+     "Fn::GetAtt": [
+      "activedirectory",
+      "Alias"
+     ]
+    }
+   }
+  },
+  "activedirectorydhcpops": {
+   "Type": "AWS::EC2::DHCPOptions",
+   "Properties": {
+    "DomainName": "directory.amazon-ecs-gmsa-linux.com",
+    "DomainNameServers": {
+     "Fn::GetAtt": [
+      "activedirectory",
+      "DnsIpAddresses"
+     ]
+    }
+   }
+  },
+  "directorydhcpopsassociation": {
+   "Type": "AWS::EC2::VPCDHCPOptionsAssociation",
+   "Properties": {
+    "DhcpOptionsId": {
+     "Ref": "activedirectorydhcpops"
+    },
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "ecscluster7830E7B5": {
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "ClusterName": "amazon-ecs-gmsa-linux",
+    "ClusterSettings": [
+     {
+      "Name": "containerInsights",
+      "Value": "enabled"
+     }
+    ]
+   }
+  },
+  "credfetcheridentitysecretFEBFB2F2": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {
+     "ExcludeCharacters": "\"'",
+     "GenerateStringKey": "password",
+     "SecretStringTemplate": "{\"username\":\"SampleWebAppUser\",\"domainName\":\"directory.amazon-ecs-gmsa-linux.com\"}"
+    },
+    "Name": "amazon-ecs-gmsa-linux/credentials-fetcher-identity"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "domainjoinssmdocument": {
+   "Type": "AWS::SSM::Document",
+   "Properties": {
+    "Content": {
+     "schemaVersion": "2.2",
+     "description": "Joins an EC2 instance to the directory.amazon-ecs-gmsa-linux.com domain using seamless joining",
+     "mainSteps": [
+      {
+       "action": "aws:domainJoin",
+       "name": "domainJoin",
+       "inputs": {
+        "directoryId": {
+         "Fn::GetAtt": [
+          "activedirectory",
+          "Alias"
+         ]
+        },
+        "directoryName": "directory.amazon-ecs-gmsa-linux.com"
+       }
+      }
+     ]
+    },
+    "DocumentType": "Command"
+   }
+  },
+  "activedirectoryseamlessjoinsecret9100DD98": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Name": {
+     "Fn::Join": [
+      "",
+      [
+       "aws/directory-services/",
+       {
+        "Fn::GetAtt": [
+         "activedirectory",
+         "Alias"
+        ]
+       },
+       "/seamless-domain-join"
+      ]
+     ]
+    },
+    "SecretString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"awsSeamlessDomainUsername\":\"admin\",\"awsSeamlessDomainPassword\":\"{{resolve:secretsmanager:",
+       {
+        "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+       },
+       ":SecretString:::}}\"}"
+      ]
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "domainjoinssmdocumentalt": {
+   "Type": "AWS::SSM::Document",
+   "Properties": {
+    "Content": {
+     "schemaVersion": "2.2",
+     "description": "Joins an ECS container instance to the directory.amazon-ecs-gmsa-linux.com domain using the realm CLI",
+     "mainSteps": [
+      {
+       "action": "aws:runShellScript",
+       "name": "domainJoinEcs",
+       "inputs": {
+        "timeoutSeconds": "160",
+        "runCommand": [
+         "echo \"Waiting 80 seconds...\"",
+         "sleep 80s",
+         "dnf install jq -y",
+         "echo \"Retrieving AD admin password...\"",
+         {
+          "Fn::Join": [
+           "",
+           [
+            "adAdminPassword=$(aws secretsmanager get-secret-value --secret-id ",
+            {
+             "Fn::Join": [
+              "-",
+              [
+               {
+                "Fn::Select": [
+                 0,
+                 {
+                  "Fn::Split": [
+                   "-",
+                   {
+                    "Fn::Select": [
+                     6,
+                     {
+                      "Fn::Split": [
+                       ":",
+                       {
+                        "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "Fn::Select": [
+                 1,
+                 {
+                  "Fn::Split": [
+                   "-",
+                   {
+                    "Fn::Select": [
+                     6,
+                     {
+                      "Fn::Split": [
+                       ":",
+                       {
+                        "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "Fn::Select": [
+                 2,
+                 {
+                  "Fn::Split": [
+                   "-",
+                   {
+                    "Fn::Select": [
+                     6,
+                     {
+                      "Fn::Split": [
+                       ":",
+                       {
+                        "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "Fn::Select": [
+                 3,
+                 {
+                  "Fn::Split": [
+                   "-",
+                   {
+                    "Fn::Select": [
+                     6,
+                     {
+                      "Fn::Split": [
+                       ":",
+                       {
+                        "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "Fn::Select": [
+                 4,
+                 {
+                  "Fn::Split": [
+                   "-",
+                   {
+                    "Fn::Select": [
+                     6,
+                     {
+                      "Fn::Split": [
+                       ":",
+                       {
+                        "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   "-",
+                   {
+                    "Fn::Select": [
+                     6,
+                     {
+                      "Fn::Split": [
+                       ":",
+                       {
+                        "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               },
+               {
+                "Fn::Select": [
+                 6,
+                 {
+                  "Fn::Split": [
+                   "-",
+                   {
+                    "Fn::Select": [
+                     6,
+                     {
+                      "Fn::Split": [
+                       ":",
+                       {
+                        "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             ]
+            },
+            ")"
+           ]
+          ]
+         },
+         "echo \"Joining the AD domain...\"",
+         "echo \"${adAdminPassword}\" | jq -r '.SecretString' | realm join -U admin@DIRECTORY.AMAZON-ECS-GMSA-LINUX.COM directory.amazon-ecs-gmsa-linux.com --verbose",
+         "echo \"Restaring the ECS container instance...\"",
+         "systemctl stop ecs",
+         "systemctl start ecs"
+        ]
+       }
+      }
+     ]
+    },
+    "DocumentType": "Command"
+   }
+  },
+  "ecsclusterasgdomainjoinssmassociation": {
+   "Type": "AWS::SSM::Association",
+   "Properties": {
+    "AssociationName": "amazon-ecs-gmsa-linux-AD-Domian-Join",
+    "Name": {
+     "Ref": "domainjoinssmdocument"
+    },
+    "Targets": [
+     {
+      "Key": "tag:ad-domain-join",
+      "Values": [
+       "amazon-ecs-gmsa-linux"
+      ]
+     }
+    ]
+   }
+  },
+  "credspecssmparameter4DB3D748": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "AllowedPattern": ".*",
+    "Description": "gMSA CredSpec",
+    "Name": "/amazon-ecs-gmsa-linux/credspec",
+    "Tier": "Standard",
+    "Type": "String",
+    "Value": "RUN Generate-CredSpec.ps1 to populate this parameter"
+   }
+  },
+  "credspecs3bucket2AC0FC3A": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "credspecs3bucketPolicy3F07CE55": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "credspecs3bucket2AC0FC3A"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "credspecs3bucket2AC0FC3A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "credspecs3bucket2AC0FC3A",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ActiveDirectoryAdminPasswordSecretARN": {
+   "Value": {
+    "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+   }
+  },
+  "ExportsOutputRefvpcPrivateSubnet1Subnet934893E8236E2271": {
+   "Value": {
+    "Ref": "vpcPrivateSubnet1Subnet934893E8"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcPrivateSubnet1Subnet934893E8236E2271"
+   }
+  },
+  "ExportsOutputRefvpcPrivateSubnet2Subnet7031C2BA60DCB1EE": {
+   "Value": {
+    "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcPrivateSubnet2Subnet7031C2BA60DCB1EE"
+   }
+  },
+  "ExportsOutputRefvpcA2121C384D1B3CDE": {
+   "Value": {
+    "Ref": "vpcA2121C38"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcA2121C384D1B3CDE"
+   }
+  },
+  "ExportsOutputFnGetAttactivedirectoryAlias6D90A2A9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "activedirectory",
+     "Alias"
+    ]
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputFnGetAttactivedirectoryAlias6D90A2A9"
+   }
+  },
+  "ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C": {
+   "Value": {
+    "Ref": "activedirectoryadminpasswordsecretB1F8F377"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefactivedirectoryadminpasswordsecretB1F8F377D9936D0C"
+   }
+  },
+  "ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848": {
+   "Value": {
+    "Ref": "credfetcheridentitysecretFEBFB2F2"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredfetcheridentitysecretFEBFB2F237ACC848"
+   }
+  },
+  "ExportsOutputRefcredspecssmparameter4DB3D74868B44AFE": {
+   "Value": {
+    "Ref": "credspecssmparameter4DB3D748"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredspecssmparameter4DB3D74868B44AFE"
+   }
+  },
+  "ExportsOutputFnGetAttcredspecs3bucket2AC0FC3AArnCFB4DF8C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "credspecs3bucket2AC0FC3A",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputFnGetAttcredspecs3bucket2AC0FC3AArnCFB4DF8C"
+   }
+  },
+  "ExportsOutputRefvpcPublicSubnet1Subnet2E65531ECCB85041": {
+   "Value": {
+    "Ref": "vpcPublicSubnet1Subnet2E65531E"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcPublicSubnet1Subnet2E65531ECCB85041"
+   }
+  },
+  "ExportsOutputRefcredspecs3bucket2AC0FC3A928DF580": {
+   "Value": {
+    "Ref": "credspecs3bucket2AC0FC3A"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefcredspecs3bucket2AC0FC3A928DF580"
+   }
+  },
+  "ExportsOutputRefdomainjoinssmdocumentA1B66A26": {
+   "Value": {
+    "Ref": "domainjoinssmdocument"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefdomainjoinssmdocumentA1B66A26"
+   }
+  },
+  "ExportsOutputRefvpcPublicSubnet2Subnet009B674FB900C242": {
+   "Value": {
+    "Ref": "vpcPublicSubnet2Subnet009B674F"
+   },
+   "Export": {
+    "Name": "amazon-ecs-gmsa-linux-infrastructure:ExportsOutputRefvpcPublicSubnet2Subnet009B674FB900C242"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

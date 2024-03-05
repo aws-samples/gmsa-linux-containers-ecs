@@ -15,7 +15,7 @@ export interface DatabaseStackProps extends StackProps {
   solutionId: string,
   vpc: ec2.Vpc,
   activeDirectoryId: string,
-  ecsAsgSecurityGroup: ec2.ISecurityGroup,
+  ecsAsgSecurityGroup: ec2.ISecurityGroup | undefined,
 }
 export class DatabaseStack extends Stack {
 
@@ -48,7 +48,9 @@ export class DatabaseStack extends Stack {
     });
 
     // Set up credential rotation for the DB administrator user.
-    sqlServerInstance.addRotationSingleUser();
+    sqlServerInstance.addRotationSingleUser({
+      securityGroup: sqlServerInstance.connections.securityGroups[0], // Workaround for: https://repost.aws/questions/QUr5JL9E9fQKO6nq70njW65w/endpoint-port-does-not-exist-for-security-group-of-rds-proxy
+    });
 
     // Store the database credentials secret ARN in the Systems Manager Parameter Store, so it can be referenced by the Web application stack.
     const sqlServerInstanceSecretArnParameter = new ssm.StringParameter(this, 'sql-server-credentials-secret-arn', {
@@ -71,8 +73,10 @@ export class DatabaseStack extends Stack {
     cfnSqlServerInstance.domain = props.activeDirectoryId;
     cfnSqlServerInstance.domainIamRoleName = dbRole.roleName;
 
-    // Allow communication from then ECS ASG to the RDS SQL Server database
-    sqlServerInstance.connections.securityGroups[0].connections.allowFrom(props.ecsAsgSecurityGroup, ec2.Port.tcp(1433));
+    // Allow communication from then ECS ASG to the RDS SQL Server database, if it exists
+    if(props.ecsAsgSecurityGroup){
+      sqlServerInstance.connections.securityGroups[0].connections.allowFrom(props.ecsAsgSecurityGroup, ec2.Port.tcp(1433));
+    }
 
 
     // Output information about the database instance.

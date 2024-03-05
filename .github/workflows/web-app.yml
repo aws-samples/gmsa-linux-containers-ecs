@@ -1,1 +1,50 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
+name: Web App CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths: [ "web-app/**" ]
+  pull_request:
+    branches: [ "main" ]
+    paths: [ "web-app/**" ]
+
+defaults:
+  run:
+    working-directory: ./web-app
+    
+jobs:
+  build-dotnet:
+    runs-on: ubuntu-latest
+
+    env:
+      VS_SOLUTION: 'web-app.sln'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore $VS_SOLUTION
+
+    - name: Build
+      run: dotnet build --no-restore $VS_SOLUTION
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal $VS_SOLUTION
+      
+  build-docker:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile
